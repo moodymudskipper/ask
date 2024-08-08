@@ -15,8 +15,19 @@ knitr::opts_chunk$set(
 
 # ask
 
-Another interface to chatgpt with R, but the goal ultimately here is to integrate
+Another interface to chatGPT with R, but the goal ultimately here is to integrate
 it in the R workflow by creating specialized wrappers.
+
+For the speech to text feature you might need.
+
+```
+brew install portaudio
+pip install SpeechRecognition
+pip install pyAudio
+```
+
+The first one for MacOS only, not sure about other systems, hopefully the 
+errors will guide you, use the `ask()` function!
 
 ## Installation
 

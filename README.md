@@ -3,8 +3,17 @@
 
 # ask
 
-Another interface to chatgpt with R, but the goal ultimately here is to
+Another interface to chatGPT with R, but the goal ultimately here is to
 integrate it in the R workflow by creating specialized wrappers.
+
+For the speech to text feature you might need.
+
+    brew install portaudio
+    pip install SpeechRecognition
+    pip install pyAudio
+
+The first one for MacOS only, not sure about other systems, hopefully
+the errors will guide you, use the `ask()` function!
 
 ## Installation
 
@@ -20,19 +29,19 @@ pak::pak("moodymudskipper/ask")
 library(ask)
 
 ask("where is the Eiffel tower?")
-#> The Eiffel Tower is located in Paris, France. It is situated on the Champ de Mars, a large public greenspace near the Seine River.
+#> The Eiffel Tower is located in Paris, France. Specifically, it is situated on the Champ de Mars, a large public greenspace, near the Seine River in the 7th arrondissement of the city.
 ```
 
 ``` r
 
 follow_up("is it high?")
-#> Yes, the Eiffel Tower is quite high. It stands at approximately 330 meters (about 1,083 feet) tall, including its antennas. When it was completed in 1889, it was the tallest man-made structure in the world until the Chrysler Building in New York City was finished in 1930. The tower remains one of the most recognizable and iconic structures in the world.
+#> Yes, the Eiffel Tower is quite tall. It stands approximately 324 meters (1,063 feet) high, including its antennas. When it was completed in 1889, it was the tallest man-made structure in the world until the completion of the Chrysler Building in New York City in 1930. Its height gives visitors stunning panoramic views of Paris.
 ```
 
 ``` r
 
 again()
-#> Yes, the Eiffel Tower is quite high. It stands at approximately 330 meters (1,083 feet) tall, including its antennas. When it was completed in 1889, it was the tallest man-made structure in the world, a title it held for over 40 years until the completion of the Chrysler Building in New York City in 1930.
+#> Yes, the Eiffel Tower is quite tall. It stands at approximately 330 meters (1,083 feet) including its antennas, making it one of the tallest structures in Paris. At the time of its completion in 1889, it was the tallest man-made structure in the world until the completion of the Chrysler Building in New York City in 1930.
 ```
 
 ``` r

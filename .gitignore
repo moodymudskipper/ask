@@ -5,3 +5,4 @@ ignore
 .httr-oauth
 .DS_Store
 .quarto
+__pycache__
