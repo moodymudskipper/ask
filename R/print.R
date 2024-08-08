@@ -1,0 +1,13 @@
+#' @export
+print.conversation <- function(x, ...) {
+  last_response <- tail(x, 1)[[1]]$response
+  data <- response_data(last_response)
+  cat(data$choices$message$content)
+  invisible(x)
+}
+
+response_data <- function(x) {
+  raw_content <- httr::content(x, "raw")
+  char_content <- rawToChar(raw_content)
+  jsonlite::fromJSON(char_content)
+}
