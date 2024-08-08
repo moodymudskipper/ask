@@ -62,10 +62,10 @@ ask_boolean("potatoe")
 If no input is provided we use speech to text, say "stop listening" to interrupt the
 recording, or wait until the time out threshold is reached.
 
-Call `ask_document()` to query in context to the active script. For instance:
-`ask_document("add roxygen2 doc to these functions")`, 
-`ask_document("can this be simplified?")`,
-`ask_document("rewrite this in data.table")`.
+Call `ask_script()` to query in context to the active script. For instance:
+`ask_script("add roxygen2 doc to these functions")`, 
+`ask_script("can this be simplified?")`,
+`ask_script("rewrite this in data.table")`.
 
 We plan to develop more such functions to help R development not only through
 questions but also script creations or in place modifications that we can then review through git diffs.

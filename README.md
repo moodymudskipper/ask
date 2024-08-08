@@ -29,19 +29,19 @@ pak::pak("moodymudskipper/ask")
 library(ask)
 
 ask("where is the Eiffel tower?")
-#> The Eiffel Tower is located in Paris, France. Specifically, it is situated on the Champ de Mars, a large public greenspace, near the Seine River in the 7th arrondissement of the city.
+#> The Eiffel Tower is located in Paris, France, specifically on the Champ de Mars near the Seine River. Its address is Champ de Mars, 5 Avenue Anatole France, 75007 Paris, France.
 ```
 
 ``` r
 
 follow_up("is it high?")
-#> Yes, the Eiffel Tower is quite tall. It stands approximately 324 meters (1,063 feet) high, including its antennas. When it was completed in 1889, it was the tallest man-made structure in the world until the completion of the Chrysler Building in New York City in 1930. Its height gives visitors stunning panoramic views of Paris.
+#> Yes, the Eiffel Tower is quite high. It stands at approximately 330 meters (about 1,083 feet) tall, including its antennas. When it was completed in 1889, it was the tallest man-made structure in the world, and it remained so until the completion of the Chrysler Building in New York City in 1930. It is still an iconic and towering landmark.
 ```
 
 ``` r
 
 again()
-#> Yes, the Eiffel Tower is quite tall. It stands at approximately 330 meters (1,083 feet) including its antennas, making it one of the tallest structures in Paris. At the time of its completion in 1889, it was the tallest man-made structure in the world until the completion of the Chrysler Building in New York City in 1930.
+#> Yes, the Eiffel Tower is quite tall. It stands at approximately 330 meters (about 1,083 feet) including its antennas. When it was completed in 1889, it was the tallest man-made structure in the world until the Chrysler Building in New York City was finished in 1930. The tower's height and iconic design make it a prominent landmark in Paris.
 ```
 
 ``` r
@@ -78,10 +78,10 @@ If no input is provided we use speech to text, say “stop listening” to
 interrupt the recording, or wait until the time out threshold is
 reached.
 
-Call `ask_document()` to query in context to the active script. For
-instance: `ask_document("add roxygen2 doc to these functions")`,
-`ask_document("can this be simplified?")`,
-`ask_document("rewrite this in data.table")`.
+Call `ask_script()` to query in context to the active script. For
+instance: `ask_script("add roxygen2 doc to these functions")`,
+`ask_script("can this be simplified?")`,
+`ask_script("rewrite this in data.table")`.
 
 We plan to develop more such functions to help R development not only
 through questions but also script creations or in place modifications
