@@ -11,11 +11,10 @@
 #'   poetry, or brainstorming. Choose low `top_p` for applications requiring
 #'   precision and coherence, such as technical writing, factual content, or summarization.
 #' @param seed The seed used by the model, makes things more reproducible, but
-#'   not completely, due to the nature of LLMs. See `local_seed` to work around
+#'   not completely, due to the nature of LLMs. See `cache` to work around
 #'   that.
-#' @param local_seed If used, the result of a query is memoised so it will be
-#'   constant in the session, and quick to fetch. This ensures true reproducibility. Can be
-#'   used without using `seed`
+#' @param cache A path where to cache the outputs, or "ram" to store them
+#' in RAM. useful to spare tokens and to have reproducible code.
 #' @param api_key API key
 #'
 #' @return a converstaion object
@@ -26,7 +25,7 @@ ask <- function(
     seed = NULL,
     temperature = 1,
     top_p = 1,
-    local_seed = NULL,
+    cache = getOption("ask.cache"),
     api_key = Sys.getenv("OPENAI_API_KEY")) {
   content <- paste(content, collapse = "\n")
   ask_impl(
@@ -35,7 +34,7 @@ ask <- function(
     seed = seed,
     temperature = temperature,
     top_p = top_p,
-    local_seed = local_seed,
+    cache = cache,
     api_key = api_key
   )
 }
@@ -51,21 +50,43 @@ ask_impl <- function(
     temperature = 1,
     top_p = 1,
     n = 1,
-    local_seed = NULL,
+    cache = NULL,
     api_key = Sys.getenv("OPENAI_API_KEY"),
-    memoised = FALSE) {
-  if (!is.null(local_seed) && !memoised) {
+    forget = FALSE) {
+  if (!is.null(cache)) {
+    if (cache %in% names(globals$memoised)) {
+      memoised_fun <- globals$memoised[[cache]]
+      if (forget) {
+        memoise::drop_cache(memoised_fun)(
+          messages = messages,
+          model = model,
+          seed = seed,
+          temperature = temperature,
+          top_p = top_p,
+          n = n,
+          api_key = api_key
+        )
+      }
+    } else {
+      if (cache == "ram") {
+        memoised_fun <- memoise::memoise(ask_impl)
+      } else {
+        memoised_fun <- memoise::memoise(
+          ask_impl,
+          cache = memoise::cache_filesystem(cache)
+        )
+      }
+      globals$memoised[[cache]] <- memoised_fun
+    }
     return(
-      ask_impl_memoised(
+      memoised_fun(
         messages = messages,
         model = model,
         seed = seed,
         temperature = temperature,
         top_p = top_p,
         n = n,
-        local_seed = local_seed,
-        api_key = api_key,
-        memoised = TRUE
+        api_key = api_key
       )
     )
   }
