@@ -6,6 +6,7 @@
 \usage{
 follow_up(
   content = listen(),
+  context = NULL,
   conversation = last_conversation(),
   model = "gpt-4o-2024-08-06",
   seed = NULL,
@@ -18,6 +19,10 @@ follow_up(
 \arguments{
 \item{content}{Your request: a string, or a vector that will be concatenated to a string with
 line breaks as separators.}
+
+\item{context}{An object of class "ask_context" usually built from a call
+to \code{context()} or a \verb{context_*()} function. It is used to define a "system"
+message that define the behavior, tone or focus of the assistant.}
 
 \item{conversation}{A conversation, initiated by \code{ask()} or followed up by
 \code{follow_up()}}

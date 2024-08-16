@@ -12,6 +12,7 @@
 #' @export
 follow_up <- function(
     content = listen(),
+    context = NULL,
     conversation = last_conversation(),
     model = "gpt-4o-2024-08-06",
     seed = NULL,
@@ -34,6 +35,16 @@ follow_up <- function(
   })
   messages <- unlist(messages, recursive = FALSE)
   content <- paste(content, collapse = "\n")
+  if (!is.null(context)) {
+    context <- c(
+      "You are a useful R programming assistant provided the following context:",
+      flatten_context(context)
+    )
+    messages[[length(messages) + 1]] <- list(
+      role = "system",
+      content = paste(context, collapse = "\n")
+    )
+  }
   messages[[length(messages) + 1]] <- list(role = "user", content = content)
   last <- conversation[[length(conversation)]]
   new_conversation <- ask_impl(

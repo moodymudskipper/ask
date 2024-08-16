@@ -5,16 +5,14 @@
 #' @param unit Optional, if not the SI is used, but better provide it.
 #'
 #' @export
-ask_boolean <- function(content = listen(), ...) {
-  content <- prefix(
-    content,
-    "For this request answer only TRUE or FALSE or NA.",
-    "The answer is upper case, no quotes or punctuation.",
-    "If the answer is not clear or the question is not boolean: return NA.",
-    "Request:"
+ask_boolean <- function(content = listen(), context = NULL, ...) {
+  context <- context(
+    context_boolean(),
+    context
   )
-  response <- ask_response(list(list(role = "user", content = content)), ...)
-  data <- response_data(response)
+  x <- ask(content, context, ...)
+  last_response <- x[[length(x)]]$response
+  data <- response_data(last_response)
   out <- data$choices$message$content
   as.logical(out)
 }

@@ -18,3 +18,5 @@ Imports:
     rstudioapi
 URL: https://github.com/moodymudskipper/ask
 BugReports: https://github.com/moodymudskipper/ask/issues
+Suggests: 
+    gmailr
