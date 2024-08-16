@@ -6,6 +6,7 @@
 \usage{
 ask(
   content = listen(),
+  context = NULL,
   model = "gpt-4o-2024-08-06",
   seed = NULL,
   temperature = 1,
@@ -17,6 +18,10 @@ ask(
 \arguments{
 \item{content}{Your request: a string, or a vector that will be concatenated to a string with
 line breaks as separators.}
+
+\item{context}{An object of class "ask_context" usually built from a call
+to \code{context()} or a \verb{context_*()} function. It is used to define a "system"
+message that define the behavior, tone or focus of the assistant.}
 
 \item{model}{The model to choose, see https://platform.openai.com/docs/models
 or call \code{all_models()}}

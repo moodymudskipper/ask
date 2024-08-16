@@ -2,6 +2,9 @@
 #'
 #' @param content Your request: a string, or a vector that will be concatenated to a string with
 #'   line breaks as separators.
+#' @param context An object of class "ask_context" usually built from a call
+#'   to `context()` or a `context_*()` function. It is used to define a "system"
+#'   message that define the behavior, tone or focus of the assistant.
 #' @param model The model to choose, see https://platform.openai.com/docs/models
 #'   or call `all_models()`
 #' @param temperature Choose higher `temperature` for more diverse and
@@ -21,6 +24,7 @@
 #' @export
 ask <- function(
     content = listen(),
+    context = NULL,
     model = "gpt-4o-2024-08-06",
     seed = NULL,
     temperature = 1,
@@ -28,8 +32,20 @@ ask <- function(
     cache = getOption("ask.cache"),
     api_key = Sys.getenv("OPENAI_API_KEY")) {
   content <- paste(content, collapse = "\n")
+  if (!is.null(context)) {
+    context <- c(
+      "You are a useful R programming assistant provided the following context:",
+      flatten_context(context)
+    )
+    messages = list(
+      list(role = "system", content = paste(context, collapse = "\n")),
+      list(role = "user", content = content)
+    )
+  } else {
+    messages = list(list(role = "user", content = content))
+  }
   ask_impl(
-    messages = list(list(role = "user", content = content)),
+    messages = messages,
     model = model,
     seed = seed,
     temperature = temperature,
