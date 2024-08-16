@@ -7,6 +7,14 @@
 \description{
 Interface to do useful things in R with LLMs.
 }
+\seealso{
+Useful links:
+\itemize{
+  \item \url{https://github.com/moodymudskipper/ask}
+  \item Report bugs at \url{https://github.com/moodymudskipper/ask/issues}
+}
+
+}
 \author{
 \strong{Maintainer}: Antoine Fabri \email{antoine.fabri@gmail.com}
 

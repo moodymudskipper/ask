@@ -1,9 +1,11 @@
-#' follow up
+#' Follow up a request
+#'
+#' Continue a conversation, by default with the same parameters.
 #'
 #' @inheritParams ask
 #' @param conversation A conversation, initiated by `ask()` or followed up by
 #'   `follow_up()`
-#' @param model,seed,temperature,top_p inherited by default from the last item
+#' @param model,seed,temperature,top_p inherited from the last item
 #' of `conversation` by default
 #'
 #' @return a conversation object
@@ -15,7 +17,7 @@ follow_up <- function(
     seed = NULL,
     temperature = NULL,
     top_p = NULL,
-    local_seed = NULL,
+    cache = getOption("ask.cache"),
     api_key = Sys.getenv("OPENAI_API_KEY")) {
 
   messages <- lapply(conversation, function(x) {
@@ -40,7 +42,7 @@ follow_up <- function(
     seed = seed %||% last$seed,
     temperature = temperature %||% last$temperature,
     top_p = top_p %||% last$top_p,
-    local_seed = local_seed,
+    cache = cache,
     api_key = api_key
   )
   conversation <- structure(c(conversation, new_conversation), class = "conversation")

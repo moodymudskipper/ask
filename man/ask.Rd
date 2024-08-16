@@ -10,7 +10,7 @@ ask(
   seed = NULL,
   temperature = 1,
   top_p = 1,
-  local_seed = NULL,
+  cache = getOption("ask.cache"),
   api_key = Sys.getenv("OPENAI_API_KEY")
 )
 }
@@ -22,7 +22,7 @@ line breaks as separators.}
 or call \code{all_models()}}
 
 \item{seed}{The seed used by the model, makes things more reproducible, but
-not completely, due to the nature of LLMs. See \code{local_seed} to work around
+not completely, due to the nature of LLMs. See \code{cache} to work around
 that.}
 
 \item{temperature}{Choose higher \code{temperature} for more diverse and
@@ -33,9 +33,8 @@ consistent text.}
 poetry, or brainstorming. Choose low \code{top_p} for applications requiring
 precision and coherence, such as technical writing, factual content, or summarization.}
 
-\item{local_seed}{If used, the result of a query is memoised so it will be
-constant in the session, and quick to fetch. This ensures true reproducibility. Can be
-used without using \code{seed}}
+\item{cache}{A path where to cache the outputs, or "ram" to store them
+in RAM. useful to spare tokens and to have reproducible code.}
 
 \item{api_key}{API key}
 }

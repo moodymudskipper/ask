@@ -1,4 +1,5 @@
 globals <- new.env()
+globals$memoised <- list()
 
 #' Fetch the last updated conversation
 #'
