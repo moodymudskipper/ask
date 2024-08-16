@@ -46,7 +46,9 @@ full_context <- context(
   context_house
 )
 full_context
+\dontrun{
 ask("What are the names of the kids that live in the happy place", context = full_context)
 ask_numeric("How many people live in the happy place?", context = full_context)
 ask_boolean("Are Robert and Brenda related?", context = full_context)
+}
 }
