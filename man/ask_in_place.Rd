@@ -23,6 +23,5 @@ information in the R console.
 \examples{
 \dontrun{
 ask_in_place("update the existing readme with useful missing info", context = context_repo())
-ask_terminal("show the latest 5 changes in compact form")
 }
 }
