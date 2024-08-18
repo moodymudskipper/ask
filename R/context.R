@@ -69,7 +69,9 @@ context <- function(...) {
     rlang::names2(dots),
     USE.NAMES = FALSE
   )
-  structure(do.call(c, contexts), class = "ask_context")
+  suppressWarnings(
+    structure(do.call(c, contexts), class = "ask_context")
+  )
 }
 
 flatten_context <- function(context, prefix = "") {
