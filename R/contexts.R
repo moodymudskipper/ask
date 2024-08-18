@@ -8,6 +8,8 @@ context_script <- function(file = NULL) {
   if (is.null(file)) {
     context("Active script" = c("```", rstudioapi::getSourceEditorContext()$contents, "```"))
   } else {
+    # so missing files don't break context features
+    if (!file.exists(file)) return(NULL)
     context('{sprintf("File: %s", file)}' := c("```", readLines(file), "```"))
   }
 }
@@ -17,7 +19,16 @@ context_script <- function(file = NULL) {
 #' @return An object of class "ask_context"
 context_repo <- function() {
   files <- list.files("R", full.names = TRUE, pattern = "[.][rR]$")
-  context("All R files of the repo" = context(!!! lapply(files, context_script)))
+  context(
+    "Special files" = context(
+      context_script("README.Rmd"),
+      context_script("NAMESPACE"),
+      context_script("DESCRIPTION"),
+      context_script("LICENSE"),
+      context_script("LICENSE.md")
+    ),
+    "R folder content" = context(!!! lapply(files, context_script))
+  )
 }
 
 #' Contextualize git commits
