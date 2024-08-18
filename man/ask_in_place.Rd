@@ -2,9 +2,17 @@
 % Please edit documentation in R/ask_in_place.R
 \name{ask_in_place}
 \alias{ask_in_place}
+\alias{follow_up_in_place}
 \title{Ask for script updates in place}
 \usage{
 ask_in_place(content = listen(), context = NULL, ...)
+
+follow_up_in_place(
+  content = listen(),
+  context = NULL,
+  conversation = last_conversation(),
+  ...
+)
 }
 \arguments{
 \item{content}{Your request: a string, or a vector that will be concatenated to a string with
@@ -14,11 +22,15 @@ line breaks as separators.}
 to \code{context()} or a \verb{context_*()} function. It is used to define a "system"
 message that define the behavior, tone or focus of the assistant.}
 
-\item{...}{Forwarded to \code{ask()}}
+\item{...}{Forwarded to \code{ask()} or \code{follow_up()}}
+
+\item{conversation}{A conversation, initiated by \code{ask()} or followed up by
+\code{follow_up()}}
 }
 \description{
 This will change files in place a terminal command in a new terminal, and print extra
-information in the R console.
+information in the R console. \code{context = context_repo()} is often useful
+here unless the package is not too big.
 }
 \examples{
 \dontrun{

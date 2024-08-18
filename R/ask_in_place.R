@@ -1,10 +1,12 @@
 #' Ask for script updates in place
 #'
 #' This will change files in place a terminal command in a new terminal, and print extra
-#' information in the R console.
+#' information in the R console. `context = context_repo()` is often useful
+#' here unless the package is not too big.
 #'
 #' @inheritParams ask
-#' @param ... Forwarded to `ask()`
+#' @inheritParams follow_up
+#' @param ... Forwarded to `ask()` or `follow_up()`
 #'
 #' @export
 #' @examples
@@ -19,45 +21,65 @@ ask_in_place <- function(content = listen(), context = NULL, ...) {
   x <- ask(content, context, ...)
   last_response <- x[[length(x)]]$response
   data <- response_data(last_response)
-  out <- data$choices$message$content
+  chunks <- build_file_chunks_from_answer(data$choices$message$content)
+  apply_chunks_in_place(chunks)
+  invisible(x)
+}
 
+#' @export
+#' @rdname ask_in_place
+follow_up_in_place <- function(content = listen(), context = NULL, conversation = last_conversation(), ...) {
+  context <- context(
+    context_in_place(),
+    context
+  )
+  x <- follow_up(content, context, conversation, ...)
+  last_response <- x[[length(x)]]$response
+  data <- response_data(last_response)
+  chunks <- build_file_chunks_from_answer(data$choices$message$content)
+  apply_chunks_in_place(chunks)
+  invisible(x)
+}
+
+build_file_chunks_from_answer <- function(content) {
   # edit file lines
-  out <- gsub("\n#? *-[fF]ile:", "\n -file:", out)
+  content <- gsub("\n#? *-[fF]ile:", "\n -file:", content)
 
   # make sure file lines are outside of the chunks
-  out <- gsub(
+  content <- gsub(
     "\n(```[^\n]*\n)(^- file: [^\n]*\n)",
     "\n\\2\\1",
-    out,
+    content,
   )
 
-  out <- strsplit(out, "\n")[[1]]
+  content <- strsplit(content, "\n")[[1]]
 
-  chunks <- split(out, cumsum(grepl("^- [fF]ile: ", out)))
+  chunks <- split(content, cumsum(grepl("^- [fF]ile: ", content)))
   # capture and print header text if relevant
   if (!grepl("^- [fF]ile: ", chunks[[1]][1])) {
     # writeLines(chunks[[1]])
     chunks[[1]] <- NULL
   }
-  for (chunk in chunks) {
+  chunks
+}
 
+apply_chunks_in_place <- function(chunks) {
+  for (chunk in chunks) {
+    # FIXME: this belongs in build_file_chunks_from_answer()
     # remove dash and space
     file <- sub("^- [fF]ile: ", "", chunk[[1]])
     # remove potential quotes
     file <- sub("^'(.*)'$", "\\1", file)
     file <- sub("^`(.*)`$", "\\1", file)
+
     # remove file line
     chunk <- chunk[-1]
 
     triple_bq_lgl <- startsWith(chunk, "```")
     chunk <- chunk[!cumprod(!triple_bq_lgl) & !rev(cumprod(!rev(triple_bq_lgl)))]
 
-    # if the code is empty, remove the file
-    if (!length(chunk) || all(sub(" ", "", chunk) == "")) {
-      file.remove(file)
-      next
-    }
 
+    # FIXME: this belongs in build_file_chunks_from_answer()
     # remove opening and closing  code chunk triple backquotes if relevant
     if (startsWith(chunk[[1]], "```")) {
       chunk <- chunk[-1]
@@ -66,13 +88,18 @@ ask_in_place <- function(content = listen(), context = NULL, ...) {
       }
       chunk <- chunk[-length(chunk)]
     }
+
+    # if the code is empty, remove the file
+    if (!length(chunk) || all(sub(" ", "", chunk) == "")) {
+      file.remove(file)
+      next
+    }
+
     if (!dir.exists(dirname(file))) {
       dir.create(dirname(file), recursive = TRUE)
     }
     writeLines(chunk, file)
   }
-  out
-  invisible(x)
 }
 
 context_in_place <- function() {
