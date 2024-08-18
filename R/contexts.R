@@ -2,6 +2,7 @@
 #'
 #' @param file Path to the file, if `NULL` we consider the active script
 #' @return An object of class "ask_context"
+#' @export
 context_script <- function(file = NULL) {
   `:=` <- NULL # for notes
   # FIXME: if the active script is saved fetch the name
@@ -17,6 +18,7 @@ context_script <- function(file = NULL) {
 #' Contextualize all R files in the repository
 #'
 #' @return An object of class "ask_context"
+#' @export
 context_repo <- function() {
   files <- list.files("R", full.names = TRUE, pattern = "[.][rR]$")
   context(
@@ -36,6 +38,7 @@ context_repo <- function() {
 #' @param n The number of commits to return context for (default is 5)
 #'
 #' @return An object of class "ask_context"
+#' @export
 context_commits <- function(n = 5) {
   `:=` <- NULL # for notes
   content <- system(sprintf("git log -n %d --format=format:'%%H%%n%%s%%n%%b%%n' --patch", n), intern = TRUE)
@@ -48,6 +51,7 @@ context_commits <- function(n = 5) {
 #' Contextualize uncommited changes
 #'
 #' @return An object of class "ask_context"
+#' @export
 context_diff <- function() {
   content <- system("git diff", intern = TRUE)
   context("Uncommited changes using `git diff`" = content)
@@ -56,6 +60,7 @@ context_diff <- function() {
 #' Contextualize the R session information
 #'
 #' @return An object of class "ask_context"
+#' @export
 context_session_info <- function() {
   content = capture.output(sessionInfo())
   context("sessionInfo()" = content)
@@ -66,6 +71,7 @@ context_session_info <- function() {
 #' @param search,num_results,page_token,label_ids,include_spam_trash,user_id Forwarded to `gmailr::gm_threads()`
 #'
 #' @return An object of class "ask_context"
+#' @export
 context_gmail <- function(search = NULL,
                                 num_results = NULL,
                                 page_token = NULL,
