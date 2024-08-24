@@ -4,11 +4,11 @@
 \alias{ask_script}
 \title{Ask in the context of a script}
 \usage{
-ask_script(content = listen(), file = NULL, context = NULL, ...)
+ask_script(prompt = listen(), file = NULL, context = NULL, ...)
 }
 \arguments{
-\item{content}{Your request: a string, or a vector that will be concatenated to a string with
-line breaks as separators.}
+\item{prompt}{Your request, a string or a character vector that will be
+concatenated to a string with line breaks as separators.}
 
 \item{file}{path to a script, if left NULL the active script is considered}
 

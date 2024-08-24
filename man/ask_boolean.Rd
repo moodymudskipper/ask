@@ -5,13 +5,13 @@
 \alias{ask_numeric}
 \title{Ask a boolean question}
 \usage{
-ask_boolean(content = listen(), context = NULL, ...)
+ask_boolean(prompt = listen(), context = NULL, ...)
 
-ask_numeric(content = listen(), unit = NULL, context = NULL, ...)
+ask_numeric(prompt = listen(), unit = NULL, context = NULL, ...)
 }
 \arguments{
-\item{content}{Your request: a string, or a vector that will be concatenated to a string with
-line breaks as separators.}
+\item{prompt}{Your request, a string or a character vector that will be
+concatenated to a string with line breaks as separators.}
 
 \item{context}{An object of class "ask_context" usually built from a call
 to \code{context()} or a \verb{context_*()} function. It is used to define a "system"

@@ -11,44 +11,21 @@
 #' @return a conversation object
 #' @export
 follow_up <- function(
-    content = listen(),
+    prompt = listen(),
     context = NULL,
     conversation = last_conversation(),
-    model = "gpt-4o-2024-08-06",
+    model = getOption("ask.model", "gpt-4o"),
     seed = NULL,
     temperature = NULL,
     top_p = NULL,
     cache = getOption("ask.cache"),
     api_key = Sys.getenv("OPENAI_API_KEY")) {
 
-  messages <- lapply(conversation, function(x) {
-    list(
-      list(
-        role = "user",
-        content = x$prompt
-      ),
-      list(
-        role = "assistant",
-        content = response_data(x$response)$choices$message$content
-      )
-    )
-  })
-  messages <- unlist(messages, recursive = FALSE)
-  content <- paste(content, collapse = "\n")
-  if (!is.null(context)) {
-    context <- c(
-      "You are a useful R programming assistant provided the following context:",
-      flatten_context(context)
-    )
-    messages[[length(messages) + 1]] <- list(
-      role = "system",
-      content = paste(context, collapse = "\n")
-    )
-  }
-  messages[[length(messages) + 1]] <- list(role = "user", content = content)
   last <- conversation[[length(conversation)]]
-  new_conversation <- ask_impl(
-    messages = messages,
+  conversation <- ask_impl(
+    prompt = prompt,
+    context = context,
+    conversation = conversation,
     model = model %||% last$model,
     seed = seed %||% last$seed,
     temperature = temperature %||% last$temperature,
@@ -56,7 +33,6 @@ follow_up <- function(
     cache = cache,
     api_key = api_key
   )
-  conversation <- structure(c(conversation, new_conversation), class = "conversation")
-  globals$last_conversation <- conversation
   conversation
 }
+

@@ -1,8 +1,7 @@
 #' @export
 print.conversation <- function(x, ...) {
-  last_response <- x[[length(x)]]$response
-  data <- response_data(last_response)
-  cat(data$choices$message$content)
+  answer <- extract_last_answer(x)
+  writeLines(answer)
   invisible(x)
 }
 

@@ -12,20 +12,24 @@
 #' ask_terminal("who contributed to this project?")
 #' ask_terminal("show the latest 5 changes in compact form")
 #' }
-ask_terminal <- function(content = listen(), context = NULL, ...) {
+ask_terminal <- function(prompt = listen(), context = NULL, ...) {
   context <- context(
     context_terminal(),
     context
   )
-  x <- ask(content, context, ...)
-  last_response <- x[[length(x)]]$response
-  data <- response_data(last_response)
-  out <- data$choices$message$content
-  out <- strsplit(out, "\n+")[[1]]
+  conversation <- ask(prompt, context, ...)
+  answer <- extract_last_answer(conversation)
+  lines <- strsplit(answer, "\n+")[[1]]
   # despite instructions, it's common to have the code between "```"
-  command <- out[!startsWith(out, "```") & !startsWith(out, "#") & !startsWith(out, "~~~") ][[1]]
-  names(out) <- rlang::rep_along(out, "i")
-  rlang::inform(out)
+  inds <-
+    !startsWith(lines, "```") &
+    !startsWith(lines, "#") &
+    !startsWith(lines, "~~~")
+  command <- lines[inds][[1]]
+  # for edge cases
+  command <- gsub("`(.*)`", "\\1", command)
+  names(lines) <- rlang::rep_along(lines, "i")
+  rlang::inform(lines)
   id <- rstudioapi::terminalCreate()
   rstudioapi::terminalActivate(id)
   rstudioapi::terminalSend(id, command)

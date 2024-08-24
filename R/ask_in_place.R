@@ -13,27 +13,26 @@
 #' \dontrun{
 #' ask_in_place("update the existing readme with useful missing info", context = context_repo())
 #' }
-ask_in_place <- function(content = listen(), context = NULL, ...) {
+ask_in_place <- function(prompt = listen(), context = NULL, ...) {
   context <- context(
     context_in_place(),
     context
   )
-  x <- ask(content, context, ...)
-  last_response <- x[[length(x)]]$response
-  data <- response_data(last_response)
-  chunks <- build_file_chunks_from_answer(data$choices$message$content)
+  conversation <- ask(prompt, context, ...)
+  answer <- extract_last_answer(conversation)
+  chunks <- build_file_chunks_from_answer(answer)
   apply_chunks_in_place(chunks)
-  invisible(x)
+  invisible(conversation)
 }
 
 #' @export
 #' @rdname ask_in_place
-follow_up_in_place <- function(content = listen(), context = NULL, conversation = last_conversation(), ...) {
+follow_up_in_place <- function(prompt = listen(), context = NULL, conversation = last_conversation(), ...) {
   context <- context(
     context_in_place(),
     context
   )
-  x <- follow_up(content, context, conversation, ...)
+  x <- follow_up(prompt, context, conversation, ...)
   last_response <- x[[length(x)]]$response
   data <- response_data(last_response)
   chunks <- build_file_chunks_from_answer(data$choices$message$content)
@@ -43,7 +42,15 @@ follow_up_in_place <- function(content = listen(), context = NULL, conversation 
 
 build_file_chunks_from_answer <- function(content) {
   # edit file lines
-  content <- gsub("\n#? *-[fF]ile:", "\n -file:", content)
+  content <- gsub("^#?\\*? *- *[fF]ile:", "- file:", content)
+  content <- gsub("\n#?\\*? *- *[fF]ile:", "\n- file:", content)
+
+  # edge case "`file: R/script.R`"
+  content <- gsub("^`file:([^\n])+`\n", "- file:\\1\n", content)
+  content <- gsub("\n`file:([^\n])+`\n", "\n- file:\\1\n", content)
+  # edge case "*file: R/script.R*"
+  content <- gsub("^\\*+file:([^\n])+\\*+\n", "- file:\\1\n", content)
+  content <- gsub("\n\\*+file:([^\n])+\\*+\n", "\n- file:\\1\n", content)
 
   # make sure file lines are outside of the chunks
   content <- gsub(
@@ -107,21 +114,29 @@ context_in_place <- function() {
     "Output format" = c(
       "You are a helpful R assistant, assuming we are working in a R package",
       "or an R project folder.",
+      "The only structure or markers you'll use are the one that are detailed",
+      "hereafter.",
       "Your task is to provide the full code of scripts that have been created,",
-      "modified, or deleted.",
+      "modified, or deleted. These represent changes to apply to change the current code in place.",
       "A renaming operation is the combination of a creation (copy) and a deletion.",
       "It is absolutely essential to provide the output structured as follows:",
       "* Part 1 (optional): Start your answer with optional commentary about the",
-      "  rest of the answer. Avoid whenever possible.",
+      "  rest of the answer.",
       "* Part2: for each created, modified or deleted file",
       "   * 2.1: write a line in formatted as '- file: FILE'",
       "     where FILE is to be replaced by the full relative file path",
       "     in a R repository.",
+      "     Namely this format is : one dash, one space, the word 'file', a colon,",
+      "     a space, and the full relative file path.",
       "     These files might for instance be scripts in the 'R' folder,",
       "     tests under 'tests/testthat/' (in that case no need to attach testthat),",
       "     a 'README.Rmd' file (always prefer .Rmd to .md), a 'NEWS.md' file or any other file.",
-      "   * 2.1: Print in a code chunk the new code of each affected file, and nothing else.",
-      "          Deleted file are displayed with no code."
+      "     It is absolutely mandatory to write this line.",
+      "   * 2.2: Print in a code chunk the new code of each affected file, and nothing else.",
+      "          Deleted file are displayed with no code.",
+      "Points 2.1 and 2.2 are absolutely essential, in particular make sure",
+      "that 2.1 is respected and that the file is printed in the right format.",
+      "Don't use any markdown artifact such as \\dontrun."
       ## chatGPT doesn't understand this:
       # "There is no other part, NEVER EVER provide additional information or commentary at the bottom of the answer."
       ## for some reason the following makes too many NAs happen, so better

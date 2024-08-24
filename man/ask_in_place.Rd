@@ -5,18 +5,18 @@
 \alias{follow_up_in_place}
 \title{Ask for script updates in place}
 \usage{
-ask_in_place(content = listen(), context = NULL, ...)
+ask_in_place(prompt = listen(), context = NULL, ...)
 
 follow_up_in_place(
-  content = listen(),
+  prompt = listen(),
   context = NULL,
   conversation = last_conversation(),
   ...
 )
 }
 \arguments{
-\item{content}{Your request: a string, or a vector that will be concatenated to a string with
-line breaks as separators.}
+\item{prompt}{Your request, a string or a character vector that will be
+concatenated to a string with line breaks as separators.}
 
 \item{context}{An object of class "ask_context" usually built from a call
 to \code{context()} or a \verb{context_*()} function. It is used to define a "system"

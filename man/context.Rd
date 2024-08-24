@@ -7,7 +7,9 @@
 context(...)
 }
 \arguments{
-\item{...}{named character vectors, or other context ojects (named or not)}
+\item{...}{named character vectors, or other context ojects (named or not).
+These dots are dynamic in the rlang sense (\code{?rlang::`dyn-dots` }) so they
+can be conveniently named using glue syntax and \verb{:=}.}
 }
 \value{
 An object of class \code{"ask_context"}

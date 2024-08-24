@@ -5,10 +5,10 @@
 \title{Follow up a request}
 \usage{
 follow_up(
-  content = listen(),
+  prompt = listen(),
   context = NULL,
   conversation = last_conversation(),
-  model = "gpt-4o-2024-08-06",
+  model = getOption("ask.model", "gpt-4o"),
   seed = NULL,
   temperature = NULL,
   top_p = NULL,
@@ -17,8 +17,8 @@ follow_up(
 )
 }
 \arguments{
-\item{content}{Your request: a string, or a vector that will be concatenated to a string with
-line breaks as separators.}
+\item{prompt}{Your request, a string or a character vector that will be
+concatenated to a string with line breaks as separators.}
 
 \item{context}{An object of class "ask_context" usually built from a call
 to \code{context()} or a \verb{context_*()} function. It is used to define a "system"

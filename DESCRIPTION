@@ -10,6 +10,7 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
     cli,
+    fs,
     httr,
     jsonlite,
     memoise,
@@ -19,4 +20,6 @@ Imports:
 URL: https://github.com/moodymudskipper/ask
 BugReports: https://github.com/moodymudskipper/ask/issues
 Suggests: 
-    gmailr
+    gmailr,
+    testthat (>= 3.0.0)
+Config/testthat/edition: 3

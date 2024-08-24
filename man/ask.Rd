@@ -5,9 +5,9 @@
 \title{Ask chat gpt anything}
 \usage{
 ask(
-  content = listen(),
+  prompt = listen(),
   context = NULL,
-  model = "gpt-4o-2024-08-06",
+  model = getOption("ask.model", "gpt-4o"),
   seed = NULL,
   temperature = 1,
   top_p = 1,
@@ -16,8 +16,8 @@ ask(
 )
 }
 \arguments{
-\item{content}{Your request: a string, or a vector that will be concatenated to a string with
-line breaks as separators.}
+\item{prompt}{Your request, a string or a character vector that will be
+concatenated to a string with line breaks as separators.}
 
 \item{context}{An object of class "ask_context" usually built from a call
 to \code{context()} or a \verb{context_*()} function. It is used to define a "system"
@@ -36,7 +36,7 @@ consistent text.}
 
 \item{top_p}{Choose high \code{top_p} for creative applications like storytelling,
 poetry, or brainstorming. Choose low \code{top_p} for applications requiring
-precision and coherence, such as technical writing, factual content, or summarization.}
+precision and coherence, such as technical writing, factual prompt, or summarization.}
 
 \item{cache}{A path where to cache the outputs, or "ram" to store them
 in RAM. useful to spare tokens and to have reproducible code.}

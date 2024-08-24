@@ -4,11 +4,11 @@
 \alias{ask_terminal}
 \title{Ask for a terminal command}
 \usage{
-ask_terminal(content = listen(), context = NULL, ...)
+ask_terminal(prompt = listen(), context = NULL, ...)
 }
 \arguments{
-\item{content}{Your request: a string, or a vector that will be concatenated to a string with
-line breaks as separators.}
+\item{prompt}{Your request, a string or a character vector that will be
+concatenated to a string with line breaks as separators.}
 
 \item{context}{An object of class "ask_context" usually built from a call
 to \code{context()} or a \verb{context_*()} function. It is used to define a "system"
