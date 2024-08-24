@@ -6,7 +6,7 @@
 \usage{
 again(
   conversation = last_conversation(),
-  model = "gpt-4o-2024-08-06",
+  model = getOption("ask.model", "gpt-4o"),
   seed = NULL,
   temperature = NULL,
   top_p = NULL,

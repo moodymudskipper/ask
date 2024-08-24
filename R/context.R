@@ -19,7 +19,9 @@
 #' internally in `ask*()` functions or when printing them. Run examples below to see
 #' how this works.
 #'
-#' @param ... named character vectors, or other context ojects (named or not)
+#' @param ... named character vectors, or other context ojects (named or not).
+#'   These dots are dynamic in the rlang sense (``?rlang::`dyn-dots` ``) so they
+#'   can be conveniently named using glue syntax and `:=`.
 #'
 #' @return An object of class `"ask_context"`
 #' @export

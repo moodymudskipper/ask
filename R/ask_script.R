@@ -5,10 +5,10 @@
 #' @param ... forwarded to `ask()`
 #'
 #' @export
-ask_script <- function(content = listen(), file = NULL, context = NULL,  ...) {
+ask_script <- function(prompt = listen(), file = NULL, context = NULL,  ...) {
   context <- context(
     context_script(file),
     context
   )
-  ask(content, context, ...)
+  ask(prompt, context, ...)
 }

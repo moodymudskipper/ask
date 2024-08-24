@@ -5,13 +5,18 @@
 #' @export
 context_script <- function(file = NULL) {
   `:=` <- NULL # for notes
-  # FIXME: if the active script is saved fetch the name
   if (is.null(file)) {
-    context("Active script" = c("```", rstudioapi::getSourceEditorContext()$contents, "```"))
+    path <- rstudioapi::getSourceEditorContext()$path
+    if (path == "") {
+      context("Active script" = c("```", rstudioapi::getSourceEditorContext()$contents, "```"))
+    } else {
+      path <- fs::path_rel(path)
+      context("Active script ({path})" := c("```", rstudioapi::getSourceEditorContext()$contents, "```"))
+    }
   } else {
     # so missing files don't break context features
     if (!file.exists(file)) return(NULL)
-    context('{sprintf("File: %s", file)}' := c("```", readLines(file), "```"))
+    context('File: {file}' := c("```", readLines(file), "```"))
   }
 }
 
