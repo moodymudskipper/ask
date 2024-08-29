@@ -159,3 +159,18 @@ context_boolean <- function() {
   )
   context("Output format" = content)
 }
+
+
+#' Request a tibble output
+#'
+#' @return An object of class "ask_context"
+#' @export
+context_tibble <- function() {
+  content <- c(
+    "You are a helpful R assistant.",
+    "For this request answer only with a call to tibble::tibble().",
+    "Respect the column names provided by the user if relevant, and respect their case.",
+    "If no column name is provided, provide some reasonable ones in snake_case."
+  )
+  context("Output format" = content)
+}
