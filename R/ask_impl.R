@@ -29,7 +29,7 @@ ask_impl <- function(
     if (!length(conversation)) conversation <- NULL
   }
   prompt <- paste(prompt, collapse = "\n")
-  if (!is.null(context)) {
+  if (!is.null(context) && !is.character(context)) {
     context <- c(
       "You are a useful R programming assistant provided the following context.",
       flatten_context(context)

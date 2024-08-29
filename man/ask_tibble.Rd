@@ -2,7 +2,7 @@
 % Please edit documentation in R/ask_tibble.R
 \name{ask_tibble}
 \alias{ask_tibble}
-\title{Ask a boolean question}
+\title{Ask for a tibble}
 \usage{
 ask_tibble(prompt = listen(), context = NULL, ...)
 }
@@ -19,5 +19,5 @@ message that define the behavior, tone or focus of the assistant.}
 \item{unit}{Optional, if not the SI is used, but better provide it.}
 }
 \description{
-Ask a boolean question
+Ask for a tibble
 }

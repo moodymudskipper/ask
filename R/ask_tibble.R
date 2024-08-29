@@ -1,4 +1,4 @@
-#' Ask a boolean question
+#' Ask for a tibble
 #'
 #' @inheritParams ask
 #' @param ... forwarded to `ask()`
@@ -17,6 +17,9 @@ ask_tibble <- function(prompt = listen(), context = NULL, ...) {
   if (!length(ind) %in% c(0,2)) abort("unexpected answer! try again!")
   if (length(ind)) {
     code <- code[(ind[[1]] + 1):(ind[[2]] - 1)]
+  }
+  if (startsWith(code[[1]], "`") && endsWith(code[[1]], "`")) {
+    code <- substr(code, 2, nchar(code)-1)
   }
   eval(parse(text=code))
 }

@@ -21,17 +21,17 @@ return_cached <- function(
         seed = seed,
         temperature = temperature,
         top_p = top_p,
-        n = n,
-        api_key = api_key
+        n = n
       )
     }
   } else {
     if (cache == "ram") {
-      memoised_fun <- memoise::memoise(ask_impl)
+      memoised_fun <- memoise::memoise(ask_impl, omit_args = "api_key")
     } else {
       memoised_fun <- memoise::memoise(
         ask_impl,
-        cache = memoise::cache_filesystem(cache)
+        cache = memoise::cache_filesystem(cache),
+        omit_args = "api_key"
       )
     }
     globals$memoised[[cache]] <- memoised_fun
