@@ -1,4 +1,4 @@
-#' Ask a boolean question
+#' Ask for a tibble
 #'
 #' @inheritParams ask
 #' @param ... forwarded to `ask()`
