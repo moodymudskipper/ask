@@ -18,6 +18,7 @@ Imports:
     reticulate,
     rlang,
     rstudioapi,
+    vctrs,
     withr
 URL: https://github.com/moodymudskipper/ask
 BugReports: https://github.com/moodymudskipper/ask/issues
