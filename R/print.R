@@ -14,13 +14,13 @@ response_data <- function(x) {
   }
   if (startsWith(data$model, "llama")) {
     data$context <- list(data$context)
-    data <- tibble::as_tibble(data)
+    data <- dplyr::as_tibble(data)
   } else {
-    data$usage <- tibble::as_tibble(data$usage)
+    data$usage <- dplyr::as_tibble(data$usage)
     # some versions of the api contain NULL elements
     data <- Filter(Negate(is.null), data)
     data$system_fingerprint <- NULL
-    data <- tibble::as_tibble(data)
+    data <- dplyr::as_tibble(data)
   }
   data
 }

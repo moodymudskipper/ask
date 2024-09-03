@@ -5,7 +5,7 @@ extract_answers <- function(conversation) {
   if (startsWith(model, "llama")) {
     answer <- data$response
   } else {
-    answer_df <- tibble::tibble(
+    answer_df <- dplyr::tibble(
       role = data$choices$message$role,
       message = data$choices$message$content
     )

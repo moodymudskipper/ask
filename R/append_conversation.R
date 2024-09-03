@@ -2,7 +2,7 @@
 append_conversation <- function(conversation, prompt, seed, temperature, top_p, response) {
   conversation <- dplyr::bind_rows(
     conversation,
-    tibble::tibble(
+    dplyr::tibble(
       prompt = prompt,
       seed = seed %||% NA_integer_,
       temperature = temperature,
