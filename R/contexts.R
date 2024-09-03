@@ -78,7 +78,7 @@ context_session_info <- function() {
 #' @return An object of class "ask_context"
 #' @export
 context_gmail <- function(search = NULL,
-                                num_results = NULL,
+                                num_results = 5,
                                 page_token = NULL,
                                 label_ids = NULL,
                                 include_spam_trash = NULL,
@@ -174,3 +174,16 @@ context_tibble <- function() {
   )
   context("Output format" = content)
 }
+
+#' Request a tibble output
+#'
+#' @return An object of class "ask_context"
+#' @export
+context_url <- function(url) {
+  `:=` <- NULL # for notes
+  tmp <- tempfile(fileext = ".html")
+  download.file(url, tmp)
+  context('URL: {url}' := c("```", readLines(tmp, warn = FALSE), "```"))
+}
+
+

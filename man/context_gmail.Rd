@@ -6,7 +6,7 @@
 \usage{
 context_gmail(
   search = NULL,
-  num_results = NULL,
+  num_results = 5,
   page_token = NULL,
   label_ids = NULL,
   include_spam_trash = NULL,
