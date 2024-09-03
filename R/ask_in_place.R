@@ -33,8 +33,7 @@ follow_up_in_place <- function(prompt = listen(), context = NULL, conversation =
     context
   )
   x <- follow_up(prompt, context, conversation, ...)
-  last_response <- x[[length(x)]]$response
-  data <- response_data(last_response)
+  data <- x[[length(x)]]$data
   chunks <- build_file_chunks_from_answer(data$choices$message$content)
   apply_chunks_in_place(chunks)
   invisible(x)

@@ -14,7 +14,7 @@ again <- function(
     top_p = NULL,
     cache = getOption("ask.cache"),
     api_key = Sys.getenv("OPENAI_API_KEY")) {
-  last <- conversation[[length(conversation)]]
+  last <- conversation[nrow(conversation),]
   conversation <- ask_impl(
     prompt = NULL,
     conversation = conversation,
