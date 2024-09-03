@@ -20,5 +20,16 @@ ask_tibble <- function(prompt = listen(), context = NULL, ...) {
   if (startsWith(code[[1]], "`") && endsWith(code[[1]], "`")) {
     code <- substr(code, 2, nchar(code)-1)
   }
-  eval(parse(text=code))
+  # we use vec_c because LLMs sometime use trailing commas in c as in c(1,2,), which fails
+  out <- eval(parse(text=code), envir = list(c = vctrs::vec_c))
+  # convert character "NA" to proper NA
+  out[out == "NA"] <- NA
+  # convert dates encoded as character to proper dates
+  out[] <- lapply(out, function(x) {
+    if (is.character(x) &&  all(is.na(x) | grepl("^[0-9]{4}-[0-9]{2}-[0-9]{2}$", x))) {
+      x <- as.Date(x)
+    }
+    x
+  })
+  out
 }
