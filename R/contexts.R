@@ -175,9 +175,10 @@ context_tibble <- function() {
   context("Output format" = content)
 }
 
-#' Request a tibble output
+#' Contextualize an url
 #'
 #' @return An object of class "ask_context"
+#' @param url An url
 #' @export
 context_url <- function(url) {
   `:=` <- NULL # for notes
