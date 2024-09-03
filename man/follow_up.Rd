@@ -8,7 +8,7 @@ follow_up(
   prompt = listen(),
   context = NULL,
   conversation = last_conversation(),
-  model = getOption("ask.model", "gpt-4o"),
+  model = NULL,
   seed = NULL,
   temperature = NULL,
   top_p = NULL,
