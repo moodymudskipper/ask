@@ -14,19 +14,20 @@ follow_up <- function(
     prompt = listen(),
     context = NULL,
     conversation = last_conversation(),
-    model = getOption("ask.model", "gpt-4o"),
+    model = NULL,
     seed = NULL,
     temperature = NULL,
     top_p = NULL,
     cache = getOption("ask.cache"),
     api_key = Sys.getenv("OPENAI_API_KEY")) {
+  # FIXME: check that we stay in the same model family
 
-  last <- conversation[[length(conversation)]]
+  last <- conversation[nrow(conversation),]
   conversation <- ask_impl(
     prompt = prompt,
     context = context,
     conversation = conversation,
-    model = model %||% last$model,
+    model = model %||% last$data$model,
     seed = seed %||% last$seed,
     temperature = temperature %||% last$temperature,
     top_p = top_p %||% last$top_p,

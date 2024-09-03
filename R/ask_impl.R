@@ -15,18 +15,18 @@ ask_impl <- function(
     n = 1,
     cache = NULL,
     api_key = Sys.getenv("OPENAI_API_KEY")) {
+  if (rlang::is_na(seed)) seed <- NULL
   # process prompt and context -------------------------------------------------
   forget <- FALSE
   if (is.null(prompt)) {
-    # FIXME: we can probably set forget <- TRUE here rather than in args
     forget <- TRUE
     if (is.null(conversation)) {
       abort("`prompt` and `conversation` can't be `NULL` at the same time")
     }
-    conv_len <- length(conversation)
-    prompt <- conversation[[conv_len]]$prompt
-    conversation[c(conv_len - 1, conv_len)] <- NULL
-    if (!length(conversation)) conversation <- NULL
+    conv_len <- nrow(conversation)
+    prompt <- conversation$prompt[[conv_len]]
+    conversation <- conversation[-conv_len,]
+    if (!nrow(conversation)) conversation <- NULL
   }
   prompt <- paste(prompt, collapse = "\n")
   if (!is.null(context) && !is.character(context)) {
@@ -40,18 +40,21 @@ ask_impl <- function(
   # return cached result if relevant -------------------------------------------
   if (!is.null(cache)) {
     # FIXME: we might as well keep the same param order
-    cached <- return_cached(
-      cache,
-      forget,
-      prompt,
-      context,
-      conversation,
-      model,
-      seed,
-      temperature,
-      top_p,
-      n,
-      api_key)
+    cached <- withr::with_envvar(
+      # we use this trick to make sure we don't memoise the api key
+      c(OPENAI_API_KEY = api_key),
+      return_cached(
+        cache,
+        forget,
+        prompt,
+        context,
+        conversation,
+        model,
+        seed,
+        temperature,
+        top_p,
+        n)
+    )
     globals$last_conversation <- cached
     return(cached)
   }
@@ -69,19 +72,21 @@ ask_impl <- function(
       messages = list(list(role = "user", content = prompt))
     }
     if (!is.null(conversation)) {
-      old_messages <- lapply(conversation, function(x) {
-        list(
+      old_messages <- lapply(
+        split(conversation, seq(nrow(conversation))),
+        function(x) {
           list(
-            role = "user",
-            content = x$prompt
-          ),
-          list(
-            role = "assistant",
-            content = response_data(x$response)$choices$message$content
+            list(
+              role = "user",
+              content = x$prompt
+            ),
+            list(
+              role = "assistant",
+              content = x$data$choices$message$content
+            )
           )
-        )
-      })
-      old_messages <- unlist(old_messages, recursive = FALSE)
+        })
+      old_messages <- unlist(unname(old_messages), recursive = FALSE)
       messages <- c(old_messages, messages)
     }
 
@@ -95,8 +100,7 @@ ask_impl <- function(
     )
   } else if (model_family == "llama") {
     if (!is.null(conversation)) {
-      last_response <- conversation[[length(conversation)]]$response
-      llama_context <- response_data(last_response)$context
+      llama_context <- conversation$data$context[[nrow(conversation)]]
     } else {
       llama_context <- NULL
     }

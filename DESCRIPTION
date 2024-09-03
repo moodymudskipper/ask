@@ -10,13 +10,15 @@ Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
     cli,
+    dplyr,
     fs,
     httr,
     jsonlite,
     memoise,
     reticulate,
     rlang,
-    rstudioapi
+    rstudioapi,
+    withr
 URL: https://github.com/moodymudskipper/ask
 BugReports: https://github.com/moodymudskipper/ask/issues
 Suggests: 
