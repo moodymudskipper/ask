@@ -2,7 +2,6 @@
 #'
 #' @inheritParams ask
 #' @param ... forwarded to `ask()`
-#' @param unit Optional, if not the SI is used, but better provide it.
 #'
 #' @export
 ask_tibble <- function(prompt = listen(), context = NULL, ...) {

@@ -15,8 +15,6 @@ to \code{context()} or a \verb{context_*()} function. It is used to define a "sy
 message that define the behavior, tone or focus of the assistant.}
 
 \item{...}{forwarded to \code{ask()}}
-
-\item{unit}{Optional, if not the SI is used, but better provide it.}
 }
 \description{
 Ask for a tibble
