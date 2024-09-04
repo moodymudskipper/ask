@@ -1,0 +1,2 @@
+This exists only so `package_is_ask()` can detect that we're in dev mode, and
+`load_all()` can copy source files to `inst/source`
