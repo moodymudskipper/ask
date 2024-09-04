@@ -160,11 +160,6 @@ context_boolean <- function() {
   context("Output format" = content)
 }
 
-
-#' Request a tibble output
-#'
-#' @return An object of class "ask_context"
-#' @export
 context_tibble <- function() {
   content <- c(
     "You are a helpful R assistant.",
@@ -186,5 +181,4 @@ context_url <- function(url) {
   download.file(url, tmp)
   context('URL: {url}' := c("```", readLines(tmp, warn = FALSE), "```"))
 }
-
 
