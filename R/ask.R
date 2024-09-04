@@ -1,4 +1,4 @@
-#' Ask chat gpt anything
+#' Ask anything
 #'
 #' @param prompt Your request, a string or a character vector that will be
 #'   concatenated to a string with line breaks as separators.
@@ -6,7 +6,8 @@
 #'   to `context()` or a `context_*()` function. It is used to define a "system"
 #'   message that define the behavior, tone or focus of the assistant.
 #' @param model The model to choose, see https://platform.openai.com/docs/models
-#'   or call `all_models()`
+#'   or call `all_models()` for chatgpt model, or use ollama models such as
+#'   "llama3.1".
 #' @param temperature Choose higher `temperature` for more diverse and
 #'   unexpected results, and lower `temperature` for more controlled and
 #'   consistent text.

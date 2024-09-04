@@ -2,7 +2,7 @@
 % Please edit documentation in R/ask.R
 \name{ask}
 \alias{ask}
-\title{Ask chat gpt anything}
+\title{Ask anything}
 \usage{
 ask(
   prompt = listen(),
@@ -24,7 +24,8 @@ to \code{context()} or a \verb{context_*()} function. It is used to define a "sy
 message that define the behavior, tone or focus of the assistant.}
 
 \item{model}{The model to choose, see https://platform.openai.com/docs/models
-or call \code{all_models()}}
+or call \code{all_models()} for chatgpt model, or use ollama models such as
+"llama3.1".}
 
 \item{seed}{The seed used by the model, makes things more reproducible, but
 not completely, due to the nature of LLMs. See \code{cache} to work around
@@ -47,5 +48,5 @@ in RAM. useful to spare tokens and to have reproducible code.}
 a converstaion object
 }
 \description{
-Ask chat gpt anything
+Ask anything
 }
