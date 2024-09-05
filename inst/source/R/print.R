@@ -1,7 +1,14 @@
 #' @export
-print.conversation <- function(x, ...) {
-  answer <- extract_last_answer(x)
-  writeLines(answer)
+print.conversation <- function(x, ..., venue = "viewer") {
+  if (venue == "console") {
+    answer <- extract_last_answer(x)
+    writeLines(answer)
+  } else if (venue == "viewer") {
+    rmd <- build_convo_rmd(x)
+    html <- tempfile(fileext = ".html")
+    rmarkdown::render(rmd, output_file = html, quiet = TRUE)
+    rstudioapi::viewer(html)
+  }
   invisible(x)
 }
 
