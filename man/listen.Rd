@@ -4,7 +4,10 @@
 \alias{listen}
 \title{listen to voice input}
 \usage{
-listen()
+listen(verbose = TRUE)
+}
+\arguments{
+\item{verbose}{whether to print the recorded text as a message}
 }
 \value{
 A string
