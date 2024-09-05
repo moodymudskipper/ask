@@ -66,46 +66,56 @@ build_file_chunks_from_answer <- function(content) {
     # writeLines(chunks[[1]])
     chunks[[1]] <- NULL
   }
-  chunks
-}
-
-apply_chunks_in_place <- function(chunks) {
-  for (chunk in chunks) {
-    # FIXME: this belongs in build_file_chunks_from_answer()
-    # remove dash and space
+  chunks <- lapply(chunks, function(chunk) {
     file <- sub("^- [fF]ile: ", "", chunk[[1]])
     # remove potential quotes
     file <- sub("^'(.*)'$", "\\1", file)
     file <- sub("^`(.*)`$", "\\1", file)
 
     # remove file line
-    chunk <- chunk[-1]
+    content <- chunk[-1]
 
-    triple_bq_lgl <- startsWith(chunk, "```")
-    chunk <- chunk[!cumprod(!triple_bq_lgl) & !rev(cumprod(!rev(triple_bq_lgl)))]
+    triple_bq_lgl <- startsWith(content, "```")
+    content <- content[!cumprod(!triple_bq_lgl) & !rev(cumprod(!rev(triple_bq_lgl)))]
 
 
     # FIXME: this belongs in build_file_chunks_from_answer()
     # remove opening and closing  code chunk triple backquotes if relevant
-    if (startsWith(chunk[[1]], "```")) {
-      chunk <- chunk[-1]
-      if (!startsWith(chunk[[length(chunk)]], "```")) {
+    if (startsWith(content[[1]], "```")) {
+      content <- content[-1]
+      if (!startsWith(content[[length(content)]], "```")) {
         abort("unexpected answer format")
       }
-      chunk <- chunk[-length(chunk)]
+      content <- content[-length(content)]
     }
+    list(file = file, content = content)
+  })
+}
 
-    # if the code is empty, remove the file
-    if (!length(chunk) || all(sub(" ", "", chunk) == "")) {
-      file.remove(file)
-      next
-    }
-
+apply_chunks_in_place <- function(chunks) {
+  files <- sapply(chunks, function(x) x$file)
+  tempfiles <- sapply(files, function(x) tempfile(fileext = paste0(".", tools::file_ext(x))))
+  contents <- lapply(chunks, function(x) x$content)
+  for (file in files) {
     if (!dir.exists(dirname(file))) {
       dir.create(dirname(file), recursive = TRUE)
     }
-    writeLines(chunk, file)
+    if (!file.exists(file)) writeLines(character(), file)
   }
+  for (i in seq_along(contents)) {
+    writeLines(contents[[i]], tempfiles[[i]])
+  }
+  on.exit({
+    for (file in files) {
+      # if the code is empty, remove the file
+      code <- readLines(file)
+      if (!length(code) || all(sub(" ", "", code) == "")) {
+        file.remove(file)
+      }
+    }
+  })
+  review_changes(files, files, tempfiles)
+  invisible(NULL)
 }
 
 context_in_place <- function() {
