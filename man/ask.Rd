@@ -2,27 +2,33 @@
 % Please edit documentation in R/ask.R
 \name{ask}
 \alias{ask}
-\title{Ask chat gpt anything}
+\title{Ask anything}
 \usage{
 ask(
-  content = listen(),
-  model = "gpt-4o-2024-08-06",
+  prompt = listen(),
+  context = NULL,
+  model = getOption("ask.model", "gpt-4o"),
   seed = NULL,
   temperature = 1,
   top_p = 1,
-  local_seed = NULL,
+  cache = getOption("ask.cache"),
   api_key = Sys.getenv("OPENAI_API_KEY")
 )
 }
 \arguments{
-\item{content}{Your request: a string, or a vector that will be concatenated to a string with
-line breaks as separators.}
+\item{prompt}{Your request, a string or a character vector that will be
+concatenated to a string with line breaks as separators.}
+
+\item{context}{An object of class "ask_context" usually built from a call
+to \code{context()} or a \verb{context_*()} function. It is used to define a "system"
+message that define the behavior, tone or focus of the assistant.}
 
 \item{model}{The model to choose, see https://platform.openai.com/docs/models
-or call \code{all_models()}}
+or call \code{all_models()} for chatgpt model, or use ollama models such as
+"llama3.1".}
 
 \item{seed}{The seed used by the model, makes things more reproducible, but
-not completely, due to the nature of LLMs. See \code{local_seed} to work around
+not completely, due to the nature of LLMs. See \code{cache} to work around
 that.}
 
 \item{temperature}{Choose higher \code{temperature} for more diverse and
@@ -31,11 +37,10 @@ consistent text.}
 
 \item{top_p}{Choose high \code{top_p} for creative applications like storytelling,
 poetry, or brainstorming. Choose low \code{top_p} for applications requiring
-precision and coherence, such as technical writing, factual content, or summarization.}
+precision and coherence, such as technical writing, factual prompt, or summarization.}
 
-\item{local_seed}{If used, the result of a query is memoised so it will be
-constant in the session, and quick to fetch. This ensures true reproducibility. Can be
-used without using \code{seed}}
+\item{cache}{A path where to cache the outputs, or "ram" to store them
+in RAM. useful to spare tokens and to have reproducible code.}
 
 \item{api_key}{API key}
 }
@@ -43,5 +48,5 @@ used without using \code{seed}}
 a converstaion object
 }
 \description{
-Ask chat gpt anything
+Ask anything
 }
