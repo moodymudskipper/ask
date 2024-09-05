@@ -28,11 +28,10 @@ ask_terminal <- function(prompt = listen(), context = NULL, ...) {
   command <- lines[inds][[1]]
   # for edge cases
   command <- gsub("`(.*)`", "\\1", command)
-  names(lines) <- rlang::rep_along(lines, "i")
-  rlang::inform(lines)
   id <- rstudioapi::terminalCreate()
   rstudioapi::terminalActivate(id)
   rstudioapi::terminalSend(id, command)
+  conversation
 }
 
 context_terminal <- function() {
