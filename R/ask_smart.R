@@ -39,12 +39,15 @@ ask_smart <- function(
   }
   content <- strsplit(content, "\n")[[1]]
   if (startsWith(content[[1]], "```")) {
-    if (length(content) == 1) browser()
-    content <- content[-1]
-    if (!startsWith(content[[length(content)]], "```")) {
-      abort("unexpected answer format")
+    if (length(content) == 1 && endsWith(content[[1]], "```")) {
+      content <- sub("^```(.*)```$", "\\1", content)
+    } else {
+      content <- content[-1]
+      if (!startsWith(content[[length(content)]], "```")) {
+        abort("unexpected answer format")
+      }
+      content <- content[-length(content)]
     }
-    content <- content[-length(content)]
   }
   content <- paste(content, collapse = "\n")
   content <- sub("^`(.*)`$", "\\1", content)
