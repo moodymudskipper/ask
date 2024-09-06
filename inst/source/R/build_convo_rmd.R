@@ -70,7 +70,7 @@ questions <- convo$prompt
 if (model_family(convo$data$model[[1]]) == "gpt") {
   answers <- convo$data$choices$message$content
 } else {
-
+  answers <- convo$data$response
 }
 
 make_chunk <- function(content, type, last = FALSE) {
