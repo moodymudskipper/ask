@@ -18,5 +18,10 @@ Useful links:
 \author{
 \strong{Maintainer}: Antoine Fabri \email{antoine.fabri@gmail.com}
 
+Other contributors:
+\itemize{
+  \item Jordi Rosell \email{jroselln@gmail.com} [contributor]
+}
+
 }
 \keyword{internal}

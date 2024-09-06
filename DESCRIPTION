@@ -2,22 +2,28 @@ Package: ask
 Title: ask R anything
 Version: 0.0.0.9000
 Authors@R: 
-    person("Antoine", "Fabri", , "antoine.fabri@gmail.com", role = c("aut", "cre"))
+    c(
+        person("Antoine", "Fabri", email = "antoine.fabri@gmail.com", role = c("aut", "cre")),
+        person("Jordi", "Rosell", email = "jroselln@gmail.com", role = "ctb")
+    )
 Description: Interface to do useful things in R with LLMs.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
 Imports: 
-    cli,
+    diffviewer,
     dplyr,
     fs,
+    htmltools,
+    htmlwidgets,
     httr,
     jsonlite,
     memoise,
-    reticulate,
+    miniUI,
     rlang,
     rstudioapi,
+    shiny,
     vctrs,
     withr
 URL: https://github.com/moodymudskipper/ask
