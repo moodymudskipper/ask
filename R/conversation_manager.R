@@ -5,6 +5,7 @@ conversation_manager <- function() {
     return(invisible(NULL))
   }
 
+
   build_choices <- function(conversations) {
     choices <- seq_along(conversations)
     nms <- sapply(globals$conversations, function(convo) {
@@ -70,6 +71,12 @@ conversation_manager <- function() {
 
     observeEvent(input$new_button, {
       new_convo_active(TRUE)
+      choices <- length(globals$conversations) + 1
+      names(choices) <- sprintf("%s: NEW", length(globals$conversations) + 1)
+      updateSelectInput(
+        session, "conversation",
+        choices = choices
+      )
     })
 
     observeEvent(input$pick_button, {
@@ -100,6 +107,7 @@ conversation_manager <- function() {
       if (new_convo_active()) {
         return(NULL)
       }
+
       convo <- conversation()
       rmd <- build_convo_rmd(convo)
       html <- tempfile(fileext = ".html")
