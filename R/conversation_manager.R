@@ -1,10 +1,4 @@
 conversation_manager <- function() {
-  # FIXME: inspect the cache to add more conversations
-  if (!length(globals$conversations)) {
-    inform("No conversation were started")
-    return(invisible(NULL))
-  }
-
 
   build_choices <- function(conversations) {
     choices <- seq_along(conversations)
@@ -62,15 +56,21 @@ conversation_manager <- function() {
   server <- function(input, output, session) {
     return_value <- shiny::reactiveVal(NULL)
     drop_counter <- shiny::reactiveVal(0)
-    new_convo_active <- shiny::reactiveVal(FALSE)
+    new_convo_active <- shiny::reactiveVal(length(globals$conversations) == 0)
 
     conversation <- shiny::reactive({
+      if (!length(globals$conversations)) {
+        return(NULL)
+      }
       drop_counter() # Add this to create reactive dependency
       globals$conversations[[min(as.numeric(input$conversation), length(globals$conversations))]]
     })
 
     observeEvent(input$new_button, {
       new_convo_active(TRUE)
+    })
+
+    observeEvent(req(new_convo_active()), {
       choices <- length(globals$conversations) + 1
       names(choices) <- sprintf("%s: NEW", length(globals$conversations) + 1)
       updateSelectInput(
@@ -88,6 +88,19 @@ conversation_manager <- function() {
     })
 
     observeEvent(input$drop_button, {
+      if (new_convo_active()) {
+        new_convo_active(FALSE)
+        updateSelectInput(
+          session,
+          "conversation",
+          choices = build_choices(globals$conversations),
+          selected = min(as.numeric(input$conversation), length(globals$conversations))
+        )
+        shinyjs::enable("new_button")
+        shinyjs::enable("pick_button")
+        return(NULL)
+      }
+
       globals$conversations <- globals$conversations[-as.numeric(input$conversation)]
       if (length(globals$conversations)) {
         updateSelectInput(
@@ -98,8 +111,7 @@ conversation_manager <- function() {
         )
         drop_counter(drop_counter() + 1) # Increment drop_counter to trigger UI refresh
       } else {
-        inform("No conversation were started")
-        shiny::stopApp()
+        new_convo_active(TRUE)
       }
     })
 
@@ -109,6 +121,7 @@ conversation_manager <- function() {
       }
 
       convo <- conversation()
+      if (is.null(convo)) return(NULL)
       rmd <- build_convo_rmd(convo)
       html <- tempfile(fileext = ".html")
       rmarkdown::render(rmd, output_file = html, quiet = TRUE)
@@ -152,8 +165,8 @@ conversation_manager <- function() {
         choices = build_choices(globals$conversations),
         selected = length(globals$conversations)
       )
-      new_convo_active(FALSE) # Reset new_convo_active
-      drop_counter(drop_counter() + 1) # Increment drop_counter to trigger UI refresh
+      new_convo_active(FALSE)
+      drop_counter(drop_counter() + 1) # trigger UI refresh
     })
 
     observeEvent(input$follow_up_button, {
