@@ -160,7 +160,7 @@ open_edge_windows <- function(url) {
 }
 
 open_chrome_linux <- function(url) {
-  command <- sprintf('google-chrome --app="%s" &', url)
+  command <- sprintf('google-chrome --app="%s"', url)
   system(command)
 }
 
