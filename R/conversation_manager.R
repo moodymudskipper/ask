@@ -166,6 +166,7 @@ conversation_manager <- function() {
         choices = build_choices(globals$conversations),
         selected = as.numeric(input$conversation)
       )
+      shiny::updateTextAreaInput(session, "follow_up_text", value = "")
     })
   }
 
