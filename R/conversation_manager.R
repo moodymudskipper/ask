@@ -16,6 +16,7 @@ conversation_manager <- function() {
   }
 
   ui <- shiny::fluidPage(
+    shinyjs::useShinyjs(),
     style = "margin: 0.5em",
     shiny::fluidRow(
       style = "display: flex; align-items: center;", # Ensure everything is horizontally aligned
@@ -71,6 +72,8 @@ conversation_manager <- function() {
     })
 
     observeEvent(req(new_convo_active()), {
+      shinyjs::disable("new_button")
+      shinyjs::disable("pick_button")
       choices <- length(globals$conversations) + 1
       names(choices) <- sprintf("%s: NEW", length(globals$conversations) + 1)
       updateSelectInput(
@@ -166,6 +169,8 @@ conversation_manager <- function() {
         selected = length(globals$conversations)
       )
       new_convo_active(FALSE)
+      shinyjs::enable("new_button")
+      shinyjs::enable("pick_button")
       drop_counter(drop_counter() + 1) # trigger UI refresh
     })
 
