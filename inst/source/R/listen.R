@@ -101,9 +101,9 @@ open_browser <- function(url, browser = getOption("ask.browser", "chrome")) {
   if (sysname == "Darwin") sysname <- "MacOS"
   out <- switch(
     sysname,
-    MacOS = open_browser_macos(url),
-    Linux = open_browser_linux(url),
-    Windows = open_browser_windows(url)
+    MacOS = open_browser_macos(url, browser),
+    Linux = open_browser_linux(url, browser),
+    Windows = open_browser_windows(url, browser)
   )
   if (is.null(out)) {
     abort(sprintf("'%s' is not supported for '%s'", browser, sysname))
@@ -160,7 +160,7 @@ open_edge_windows <- function(url) {
 }
 
 open_chrome_linux <- function(url) {
-  command <- sprintf('google-chrome --app="%s" &', url)
+  command <- sprintf('google-chrome --app="%s"', url)
   system(command)
 }
 
