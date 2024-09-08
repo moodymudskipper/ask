@@ -1,4 +1,5 @@
 conversation_manager <- function() {
+  # UI =========================================================================
 
   build_choices <- function(conversations) {
     choices <- seq_along(conversations)
@@ -54,6 +55,8 @@ conversation_manager <- function() {
     )
   )
 
+  # SERVER =====================================================================
+
   server <- function(input, output, session) {
     return_value <- shiny::reactiveVal(NULL)
     drop_counter <- shiny::reactiveVal(0)
@@ -67,6 +70,9 @@ conversation_manager <- function() {
       globals$conversations[[min(as.numeric(input$conversation), length(globals$conversations))]]
     })
 
+    # Top right buttons --------------------------------------------------------
+
+    # NEW
     observeEvent(input$new_button, {
       new_convo_active(TRUE)
     })
@@ -82,14 +88,17 @@ conversation_manager <- function() {
       )
     })
 
+    # PICK
     observeEvent(input$pick_button, {
       shiny::stopApp(conversation())
     })
 
+    # CLOSE
     observeEvent(input$close_button, {
       shiny::stopApp()
     })
 
+    # DROP
     observeEvent(input$drop_button, {
       if (new_convo_active()) {
         new_convo_active(FALSE)
@@ -112,11 +121,13 @@ conversation_manager <- function() {
           choices = build_choices(globals$conversations),
           selected = min(as.numeric(input$conversation), length(globals$conversations))
         )
-        drop_counter(drop_counter() + 1) # Increment drop_counter to trigger UI refresh
+        drop_counter(drop_counter() + 1) # trigger UI refresh
       } else {
         new_convo_active(TRUE)
       }
     })
+
+    # conversation -------------------------------------------------------------
 
     output$convo_ui <- shiny::renderUI({
       if (new_convo_active()) {
@@ -130,6 +141,8 @@ conversation_manager <- function() {
       rmarkdown::render(rmd, output_file = html, quiet = TRUE)
       suppressWarnings(htmltools::includeHTML(html))
     })
+
+    # ask/follow up text box ---------------------------------------------------
 
     output$text_area_ui <- shiny::renderUI({
       if (new_convo_active()) {
@@ -151,11 +164,13 @@ conversation_manager <- function() {
       }
     })
 
+    # ask/follow up buttons ----------------------------------------------------
+
     output$action_button_ui <- shiny::renderUI({
       if (new_convo_active()) {
-        shiny::actionButton("ask_button", HTML("&#9654;"), class = "btn-primary")  # Arrow pointing to the right
+        shiny::actionButton("ask_button", HTML("&#9654;"), class = "btn-primary")
       } else {
-        shiny::actionButton("follow_up_button", HTML("&#9654;"), class = "btn-primary")  # Arrow pointing to the right
+        shiny::actionButton("follow_up_button", HTML("&#9654;"), class = "btn-primary")
       }
     })
 
@@ -178,7 +193,7 @@ conversation_manager <- function() {
       req(input$follow_up_text)
       convo <- follow_up(prompt = input$follow_up_text, conversation = conversation())
       globals$conversations[[as.numeric(input$conversation)]] <- convo
-      drop_counter(drop_counter() + 1) # Increment to trigger UI refresh
+      drop_counter(drop_counter() + 1) # trigger UI refresh
       updateSelectInput(
         session, "conversation",
         choices = build_choices(globals$conversations),
@@ -187,6 +202,8 @@ conversation_manager <- function() {
       shiny::updateTextAreaInput(session, "follow_up_text", value = "")
     })
   }
+
+  # run ------------------------------------------------------------------------
 
   shiny::runApp(
     shiny::shinyApp(ui, server),
