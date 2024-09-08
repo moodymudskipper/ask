@@ -66,7 +66,7 @@ conversation_manager <- function() {
 
     conversation <- shiny::reactive({
       drop_counter() # Add this to create reactive dependency
-      globals$conversations[[as.numeric(input$conversation)]]
+      globals$conversations[[min(as.numeric(input$conversation), length(globals$conversations))]]
     })
 
     observeEvent(input$new_button, {
