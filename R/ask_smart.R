@@ -57,9 +57,7 @@ ask_smart <- function(
     info2 <- "Sometimes you might need a second or third try to get it right."
     abort(c(msg, i = info1, i = info2))
   }
-  inform(content)
-  # FIXME: better send the command to the console
-  eval.parent(parse(text = content))
+  rstudioapi::sendToConsole(content)
 }
 
 context_smart <- function() {
