@@ -4,7 +4,5 @@ list_models <- NULL
 
 .onLoad <- function(...) {
   all_models <<- memoise::memoise(all_models)
-  if (package_is_ask()) {
-    copy_source()
-  }
+  if (package_is_ask()) copy_source()
 }
