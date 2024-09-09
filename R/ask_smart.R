@@ -65,9 +65,10 @@ ask_smart <- function(
 context_smart <- function() {
   content <- c(
     "You are a helpful R assistant, your user is working in a project or a package.",
-    "Given the content of the ask R package, whose source is reproduced below,",
-    "please provide a call the relevant `ask()` or `ask_*()` function",
-    "using the minimal necessary `context_()` function.",
+    "Your role is to translate a request into a call to functions from the {ask} package,",
+    "whose source is reproduced at the bottom of this message.",
+    "More specifically we expect from you a call to the relevant `ask()` or `ask_*()` function",
+    "using the minimal necessary `context_()` function, so that running it will answer the request adequately.",
     "For instance context_script() is used if we need the active's script code (or if the user mention uses termes like 'this script'),",
     "and context_repo() is used if we need all the code.",
     "Avoid using `context_repo()` if it's not really needed, for instance if no context is needed at all",
