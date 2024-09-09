@@ -72,15 +72,8 @@ if (model_family(convo$data$model[[1]]) == "gpt") {
 } else {
   answers <- convo$data$response
 }
-
 make_chunk <- function(content, type, last = FALSE) {
   if (nchar(content) > 80) {
-    first_line <- strsplit(content, "\n")[[1]][1]
-    if (startsWith(first_line, "```")) {
-      summary <- "*code*"
-    } else {
-      summary <- paste0(substr(first_line, 1, 80), "...")
-    }
     sprintf(r"[<div class="%s">
 <details%s>
 <summary>%s</summary>
@@ -90,7 +83,7 @@ make_chunk <- function(content, type, last = FALSE) {
 <p>]",
 type,
 if (last) " open" else "",
-summary,
+truncate(content),
 content
     )
   } else {
@@ -112,4 +105,25 @@ for (i in seq_len(n)) {
 code <- paste(code, collapse = "\n")
 writeLines(code, con = path)
 return(path)
+}
+
+
+truncate <- function(x, n = 80) {
+  lines <- strsplit(x, "\n")[[1]]
+  if (length(lines) == 1 && nchar(x) <= n) return(x)
+  if (startsWith(lines[1], "```")) {
+    return("*code*")
+  } else   if (startsWith(lines[1], "* ") || startsWith(lines[1], "- ")) {
+    return("*list*")
+  }
+  short <- substr(lines[1], 1, n-3)
+  odd_backquotes <- sum(strsplit(short, "")[[1]] == "`") %% 2
+  if (odd_backquotes) {
+    if (endsWith(short, "`")) {
+      short <- substr(short, 1, n-4)
+    } else {
+      short <- paste0(short, "`")
+    }
+  }
+  paste0(short, "...")
 }
