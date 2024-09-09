@@ -30,6 +30,7 @@ URL: https://github.com/moodymudskipper/ask
 BugReports: https://github.com/moodymudskipper/ask/issues
 Suggests: 
     constructive,
+    clipr,
     gmailr,
     testthat (>= 3.0.0)
 Config/testthat/edition: 3
