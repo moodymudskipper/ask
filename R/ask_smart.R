@@ -57,6 +57,15 @@ ask_smart <- function(
     info2 <- "Sometimes you might need a second or third try to get it right."
     abort(c(msg, i = info1, i = info2))
   }
+  mc <- match.call()
+  args <- as.list(mc[-1])
+  args$prompt <- NULL
+  args$contect <- NULL
+  call <- parse(text = content)[[1]]
+  call[[1]] <- call("::", as.symbol("ask"), call[[1]])
+  call[[3]] <- call("::", as.symbol("ask"), call[[3]])
+  call <- as.call(c(as.list(call), args))
+  content <- rlang::expr_deparse(call)
   rstudioapi::sendToConsole(content)
 }
 
