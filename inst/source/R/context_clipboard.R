@@ -23,5 +23,3 @@ context_clipboard <- function() {
     context("Clipboard content" := clipboard_content)
   }
 }
-
-
