@@ -51,7 +51,7 @@ ask_smart <- function(
   }
   content <- paste(content, collapse = "\n")
   content <- sub("^`(.*)`$", "\\1", content)
-  if (!startsWith(content, "ask")) {
+  if (!grepl("^ask.*\\(.*\\)$", content)) {
     msg <- "oops! It seems `ask_smart()` wasn't smart enough! It couldnt create a proper call to answer your request."
     info1 <- "The most explicit your input, the most likely you are to get a proper output."
     info2 <- "Sometimes you might need a second or third try to get it right."
