@@ -63,6 +63,11 @@ ask_impl <- function(
   # FIXME: higher level wrappers with same inputs?
   model_family <- model_family(model)
   if (model_family == "gpt") {
+    if (!curl::has_internet()) {
+      msg <- "gpt models require an internet connection"
+      info1 <- "You are not connected"
+      abort(c(msg, x = info1))
+    }
     if (!is.null(context)) {
       messages = list(
         list(role = "system", content = context),

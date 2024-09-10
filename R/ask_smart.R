@@ -51,17 +51,31 @@ ask_smart <- function(
   }
   content <- paste(content, collapse = "\n")
   content <- sub("^`(.*)`$", "\\1", content)
-  inform(content)
-  # FIXME: better send the command to the console
-  eval.parent(parse(text = content))
+  if (!grepl("^ask.*\\(.*\\)$", content)) {
+    msg <- "oops! It seems `ask_smart()` wasn't smart enough! It couldnt create a proper call to answer your request."
+    info1 <- "The most explicit your input, the most likely you are to get a proper output."
+    info2 <- "Sometimes you might need a second or third try to get it right."
+    abort(c(msg, i = info1, i = info2))
+  }
+  mc <- match.call()
+  args <- as.list(mc[-1])
+  args$prompt <- NULL
+  args$contect <- NULL
+  call <- parse(text = content)[[1]]
+  call[[1]] <- call("::", as.symbol("ask"), call[[1]])
+  if (length(call) == 3) call[[3]] <- call("::", as.symbol("ask"), call[[3]])
+  call <- as.call(c(as.list(call), args))
+  content <- rlang::expr_deparse(call)
+  rstudioapi::sendToConsole(content)
 }
 
 context_smart <- function() {
   content <- c(
     "You are a helpful R assistant, your user is working in a project or a package.",
-    "Given the content of the ask R package, whose source is reproduced below,",
-    "please provide a call the relevant `ask()` or `ask_*()` function",
-    "using the minimal necessary `context_()` function.",
+    "Your role is to translate a request into a call to functions from the {ask} package,",
+    "whose source is reproduced at the bottom of this message.",
+    "More specifically we expect from you a call to the relevant `ask()` or `ask_*()` function",
+    "using the minimal necessary `context_()` function, so that running it will answer the request adequately.",
     "For instance context_script() is used if we need the active's script code (or if the user mention uses termes like 'this script'),",
     "and context_repo() is used if we need all the code.",
     "Avoid using `context_repo()` if it's not really needed, for instance if no context is needed at all",

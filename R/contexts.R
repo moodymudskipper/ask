@@ -4,7 +4,6 @@
 #' @return An object of class "ask_context"
 #' @export
 context_script <- function(file = NULL) {
-  `:=` <- NULL # for notes
   if (is.null(file)) {
     path <- rstudioapi::getSourceEditorContext()$path
     if (path == "") {
@@ -45,7 +44,6 @@ context_repo <- function() {
 #' @return An object of class "ask_context"
 #' @export
 context_commits <- function(n = 5) {
-  `:=` <- NULL # for notes
   content <- system(sprintf("git log -n %d --format=format:'%%H%%n%%s%%n%%b%%n' --patch", n), intern = TRUE)
   context(
     r"[{sprintf("Last %d Git commits, using `git log -n %d --format=format:'%%H%%n%%s%%n%%b%%n' --patch`", n, n)}]" :=
@@ -83,7 +81,6 @@ context_gmail <- function(search = NULL,
                                 label_ids = NULL,
                                 include_spam_trash = NULL,
                                 user_id = "me") {
-  `:=` <- NULL # for notes
   rlang::check_installed("gmailr")
   # fetch 10 last threads and loop through them and their messages, printing
   # only those that come after the previous_last_email_time
@@ -101,7 +98,6 @@ context_gmail <- function(search = NULL,
 }
 
 context_gmail_thread <- function(thread) {
-  `:=` <- NULL # for notes
   messages <- context(!!! lapply(thread$messages, context_gmail_message))
   context('{sprintf("thread %s", thread$id)}' := messages)
 }
@@ -176,7 +172,6 @@ context_tibble <- function() {
 #' @param url An url
 #' @export
 context_url <- function(url) {
-  `:=` <- NULL # for notes
   tmp <- tempfile(fileext = ".html")
   download.file(url, tmp)
   context('URL: {url}' := c("```", readLines(tmp, warn = FALSE), "```"))

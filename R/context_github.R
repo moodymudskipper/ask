@@ -12,11 +12,11 @@
 #'
 #' @section values for filter:
 #'
-# - **assigned** (default): Issues assigned to the authenticated user.
-# - **created**: Issues created by the authenticated user.
-# - **mentioned**: Issues mentioning the authenticated user.
-# - **subscribed**: Issues the user is subscribed to.
-# - **all**: All issues owned by the authenticated user.
+#' - **assigned** (default): Issues assigned to the authenticated user.
+#' - **created**: Issues created by the authenticated user.
+#' - **mentioned**: Issues mentioning the authenticated user.
+#' - **subscribed**: Issues the user is subscribed to.
+#' - **all**: All issues owned by the authenticated user.
 #'
 #' @return An object of class "ask_context"
 #' @export
@@ -105,8 +105,6 @@ get_github_data <-  function(
     n = 30,
     include_comments = FALSE
 ) {
-  `:=` <- NULL  # for notes
-
   # arg checks and preprocessing -----------------------------------------------
 
   if (is.null(repo)) {

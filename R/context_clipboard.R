@@ -3,7 +3,6 @@
 #' @return An object of class "ask_context"
 #' @export
 context_clipboard <- function() {
-  `:=` <- NULL  # Required for glue syntax
   rlang::check_installed("clipr")
   clipboard_content <- clipr::read_clip()
 

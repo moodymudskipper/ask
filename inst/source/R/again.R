@@ -8,7 +8,7 @@
 #' @export
 again <- function(
     conversation = last_conversation(),
-    model = getOption("ask.model", "gpt-4o"),
+    model = NULL,
     seed = NULL,
     temperature = NULL,
     top_p = NULL,
@@ -18,7 +18,7 @@ again <- function(
   conversation <- ask_impl(
     prompt = NULL,
     conversation = conversation,
-    model = model %||% last$model,
+    model = model %||% last$data$model,
     seed = seed %||% last$seed,
     temperature = temperature %||% last$temperature,
     top_p = top_p %||% last$top_p,
