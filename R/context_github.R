@@ -105,8 +105,6 @@ get_github_data <-  function(
     n = 30,
     include_comments = FALSE
 ) {
-  `:=` <- NULL  # for notes
-
   # arg checks and preprocessing -----------------------------------------------
 
   if (is.null(repo)) {
