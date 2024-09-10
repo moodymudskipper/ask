@@ -22,7 +22,7 @@ review_changes <- function(name, old_path, new_path) {
         shiny::actionButton("skip", "Skip"),
         shiny::actionButton("accept", "Accept", class = "btn-success"),
         shiny::actionButton("reject", "Reject", class = "btn-warning"),
-        shiny::actionButton("close_app", "X", class = "btn-danger")
+        shiny::actionButton("close_app", "X", class = "btn-secondary")
       )
     ),
     shiny::fluidRow(

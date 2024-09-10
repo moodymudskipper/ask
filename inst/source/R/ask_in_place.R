@@ -53,21 +53,27 @@ build_file_chunks_from_answer <- function(content) {
 
   # make sure file lines are outside of the chunks
   content <- gsub(
-    "\n(```[^\n]*\n)(^- file: [^\n]*\n)",
+    "\n(```[^\n]*\n)(^- [fF]ile: [^\n]*\n)",
     "\n\\2\\1",
     content,
   )
 
+  # harmonize case
+  content <- gsub("^- [fF]ile: ", "- file: ", content)
+  content <- gsub("\n- [fF]ile: ", "\n- file: ", content)
+
+  # split into lines
   content <- strsplit(content, "\n")[[1]]
 
-  chunks <- split(content, cumsum(grepl("^- [fF]ile: ", content)))
-  # capture and print header text if relevant
-  if (!grepl("^- [fF]ile: ", chunks[[1]][1])) {
+  chunks <- split(content, cumsum(grepl("^- file: ", content)))
+  # remove header text if relevant
+  if (!grepl("^- file: ", chunks[[1]][1])) {
     # writeLines(chunks[[1]])
     chunks[[1]] <- NULL
   }
+  if (!length(chunks)) abort("oops, the output was not formatted as expected")
   chunks <- lapply(chunks, function(chunk) {
-    file <- sub("^- [fF]ile: ", "", chunk[[1]])
+    file <- sub("^- file: ", "", chunk[[1]])
     # remove potential quotes
     file <- sub("^'(.*)'$", "\\1", file)
     file <- sub("^`(.*)`$", "\\1", file)
@@ -75,21 +81,37 @@ build_file_chunks_from_answer <- function(content) {
     # remove file line
     content <- chunk[-1]
 
+    # remove what's outside the ```
     triple_bq_lgl <- startsWith(content, "```")
-    content <- content[!cumprod(!triple_bq_lgl) & !rev(cumprod(!rev(triple_bq_lgl)))]
-
-
-    # FIXME: this belongs in build_file_chunks_from_answer()
-    # remove opening and closing  code chunk triple backquotes if relevant
-    if (startsWith(content[[1]], "```")) {
-      content <- content[-1]
-      if (!startsWith(content[[length(content)]], "```")) {
-        abort("unexpected answer format")
+    if (any(triple_bq_lgl)) {
+      content <- content[!cumprod(!triple_bq_lgl) & !rev(cumprod(!rev(triple_bq_lgl)))]
+      if (length(content) == 1) {
+        msg <- sprintf(
+          paste0(
+            "The LLM's output was too long and the updated '%s' couldn't be ",
+            "fetched completely and was ignored"
+          ),
+          file
+        )
+        rlang::warn(msg)
+        return(NULL)
       }
-      content <- content[-length(content)]
+
+      # FIXME: this belongs in build_file_chunks_from_answer()
+      # remove opening and closing  code chunk triple backquotes if relevant
+      if (startsWith(content[[1]], "```")) {
+        content <- content[-1]
+        if (!startsWith(content[[length(content)]], "```")) {
+          abort("unexpected answer format")
+        }
+        content <- content[-length(content)]
+      }
     }
+
     list(file = file, content = content)
   })
+  chunks <- Filter(Negate(is.null), chunks)
+  chunks
 }
 
 apply_chunks_in_place <- function(chunks) {
