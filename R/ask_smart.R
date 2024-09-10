@@ -63,7 +63,7 @@ ask_smart <- function(
   args$contect <- NULL
   call <- parse(text = content)[[1]]
   call[[1]] <- call("::", as.symbol("ask"), call[[1]])
-  call[[3]] <- call("::", as.symbol("ask"), call[[3]])
+  if (length(call) == 3) call[[3]] <- call("::", as.symbol("ask"), call[[3]])
   call <- as.call(c(as.list(call), args))
   content <- rlang::expr_deparse(call)
   rstudioapi::sendToConsole(content)
