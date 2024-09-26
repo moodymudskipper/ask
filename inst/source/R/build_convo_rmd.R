@@ -68,11 +68,22 @@ convo <- dplyr::as_tibble(convo)
 code <- header
 questions <- convo$prompt
 if (model_family(convo$data$model[[1]]) == "gpt") {
-  answers <- convo$data$choices$message$content
+  # consider structured output if relevant
+  tool_calls <- convo$data$choices$message$tool_calls
+  if (!is.null(tool_calls) && all(lengths(tool_calls))) {
+    answers <- tool_calls
+  } else {
+    answers <- convo$data$choices$message$content
+  }
 } else {
   answers <- convo$data$response
 }
 make_chunk <- function(content, type, last = FALSE) {
+  if (is.data.frame(content)) {
+    content <- jsonlite::prettify(content$`function`$arguments)
+    content <- sprintf("```json\n%s\n```", content)
+  }
+
   if (nchar(content) > 80) {
     sprintf(r"[<div class="%s">
 <details%s>
