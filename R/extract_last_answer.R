@@ -18,7 +18,13 @@ extract_last_answer <- function(conversation) {
   if (startsWith(data$model, "llama")) {
     answer <- data$response
   } else {
-    answer <- data$choices$message$content
+    # consider structured output if relevant
+    tool_calls <- data$choices$message$tool_calls
+    if (!is.null(tool_calls) && !is.na(tool_calls)) {
+      answer <- data$choices$message$tool_calls
+    } else {
+      answer <- data$choices$message$content
+    }
   }
   answer
 }
