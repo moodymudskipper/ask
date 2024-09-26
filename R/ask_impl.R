@@ -14,6 +14,7 @@ ask_impl <- function(
     top_p = 1,
     n = 1,
     cache = NULL,
+    tools = NULL,
     api_key = Sys.getenv("OPENAI_API_KEY")) {
   if (rlang::is_na(seed)) seed <- NULL
   # process prompt and context -------------------------------------------------
@@ -101,6 +102,7 @@ ask_impl <- function(
       seed = seed,
       temperature = temperature,
       top_p = top_p,
+      tools = tools,
       api_key = api_key
     )
   } else if (model_family == "llama") {

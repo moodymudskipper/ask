@@ -6,6 +6,7 @@ ask_response_chatgpt <- function(
     temperature = 1,
     top_p = 1,
     n = 1,
+    tools = NULL,
     api_key = Sys.getenv("OPENAI_API_KEY")) {
   api_url <- "https://api.openai.com/v1/chat/completions"
   headers <- httr::add_headers(
@@ -17,8 +18,10 @@ ask_response_chatgpt <- function(
     messages = messages,
     temperature = temperature,
     top_p = top_p,
+    tools = tools,
     n = n
   )
+  if (is.null(tools)) body$tools <- NULL
   body$seed <- seed
   response <- httr::POST(
     url = api_url,
@@ -37,6 +40,7 @@ ask_response_ollama <- function(
     seed = NULL,
     temperature = 1,
     top_p = 1,
+    format = NULL,
     cache = getOption("ask.cache")) {
   api_url <- "http://localhost:11434/api/generate"
   headers <- httr::add_headers(
@@ -53,6 +57,8 @@ ask_response_ollama <- function(
         top_p = top_p         # Set top_p to 0.9
       )
   )
+  if (!is.null(format)) body$format <- format
+
   body$options$seed <- seed
   body$system <- context
   body$context <- llama_context

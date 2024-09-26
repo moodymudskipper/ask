@@ -13,14 +13,15 @@
 #' \dontrun{
 #' ask_in_place("update the existing readme with useful missing info", context = context_repo())
 #' }
-ask_in_place <- function(prompt = listen(), context = NULL, ...) {
+ask_in_place <- function(prompt = listen(), context = NULL, model = "gpt-4o-2024-08-06", ...) {
   context <- context(
-    context_in_place(),
+    context_in_place(model),
     context
   )
-  conversation <- ask(prompt, context, ...)
+  tools <- if (model_family(model) == "gpt") tools_for_ask_in_place()
+  conversation <- ask_impl(prompt, context, model = model, tools = tools, ...)
   answer <- extract_last_answer(conversation)
-  chunks <- build_file_chunks_from_answer(answer)
+  chunks <- build_file_chunks_from_answer(answer, model)
   apply_chunks_in_place(chunks)
   invisible(conversation)
 }
@@ -39,7 +40,13 @@ follow_up_in_place <- function(prompt = listen(), context = NULL, conversation =
   invisible(x)
 }
 
-build_file_chunks_from_answer <- function(content) {
+build_file_chunks_from_answer <- function(content, model = "gpt-4o-2024-08-06") {
+  content_is_structured <- is.list(content)
+  if (content_is_structured) {
+    chunks <- jsonlite::fromJSON(content[[1]]$`function`$arguments, simplifyDataFrame = FALSE)$changes
+    return(chunks)
+  }
+
   # edit file lines
   content <- gsub("^#?\\*? *- *[fF]ile:", "- file:", content)
   content <- gsub("\n#?\\*? *- *[fF]ile:", "\n- file:", content)
@@ -140,40 +147,66 @@ apply_chunks_in_place <- function(chunks) {
   invisible(NULL)
 }
 
-context_in_place <- function() {
-  context(
-    "Output format" = c(
-      "You are a helpful R assistant, assuming we are working in a R package",
-      "or an R project folder.",
-      "The only structure or markers you'll use are the one that are detailed",
-      "hereafter.",
-      "Your task is to provide the full code of scripts that have been created,",
-      "modified, or deleted. These represent changes to apply to change the current code in place.",
-      "A renaming operation is the combination of a creation (copy) and a deletion.",
-      "It is absolutely essential to provide the output structured as follows:",
-      "* Part 1 (optional): Start your answer with optional commentary about the",
-      "  rest of the answer.",
-      "* Part2: for each created, modified or deleted file",
-      "   * 2.1: write a line in formatted as '- file: FILE'",
-      "     where FILE is to be replaced by the full relative file path",
-      "     in a R repository.",
-      "     Namely this format is : one dash, one space, the word 'file', a colon,",
-      "     a space, and the full relative file path.",
-      "     These files might for instance be scripts in the 'R' folder,",
-      "     tests under 'tests/testthat/' (in that case no need to attach testthat),",
-      "     a 'README.Rmd' file (always prefer .Rmd to .md), a 'NEWS.md' file or any other file.",
-      "     It is absolutely mandatory to write this line.",
-      "   * 2.2: Print in a code chunk the new code of each affected file, and nothing else.",
-      "          Deleted file are displayed with no code.",
-      "Points 2.1 and 2.2 are absolutely essential, in particular make sure",
-      "that 2.1 is respected and that the file is printed in the right format.",
-      "Don't use any markdown artifact such as \\dontrun."
-      ## chatGPT doesn't understand this:
-      # "There is no other part, NEVER EVER provide additional information or commentary at the bottom of the answer."
-      ## for some reason the following makes too many NAs happen, so better
-      ## do this with post-processing
-      # "If the request is not related to R script creation, modification or deletion,",
-      # " the answer should only be 'NA' and nothing more."
+context_in_place <- function(model = "gpt-4o-2024-08-06") {
+  if (model_family(model) == "gpt") {
+    context <- context("Output format" = c(
+      "You are a helpful R assistant.",
+      "Your task is to provide changes to scripts that have been created, modified, or deleted.",
+      "To do so you call the apply_changes function.",
+      "The 'changes' field is an array of change objects.",
+      "Each change object must have 'file' and 'content' fields.",
+      "'file' contains the full path to the modified script",
+      "while 'content' contains the full content of the modified script, or an empty string if the intent is to delete the script."
+    ))
+  } else {
+    # Here are some instruction to structure the output using llama but the
+    # results are very really poor when using the following unfortunately
+    # https://github.com/ollama/ollama/blob/main/docs/api.md#request-3
+    # context <- context("Output format" = c(
+    #   "You are a helpful R assistant, you respond using JSON.",
+    #   "It is extremely important that you follow these instructions and respond in JSON",
+    #   "Your task is to provide changes to scripts that have been created, modified, or deleted.",
+    #   "The output should be a JSON object with a 'changes' field, that is an array of change objects.",
+    #   "Each change object must have 'file' and 'content' fields.",
+    #   "'file' contains the full path to the modified script",
+    #   "while 'content' contains the full content of the modified script, or an empty string if the intent is to delete the script.",
+    #   r"[Example output to illustrate the format: {"changes": [ {"file": "R/my_script1.R", "content": "add <- function(x, y) {\n  x + y\n}" }, {"file": "R/my_script2.R", "content": "subtract <- function(x, y) {\n  x - y\n}" }]}]"
+    # ))
+
+    context <- context(
+      "Output format" = c(
+        "You are a helpful R assistant, assuming we are working in a R package",
+        "or an R project folder.",
+        "The only structure or markers you'll use are the one that are detailed",
+        "hereafter.",
+        "Your task is to provide the full code of scripts that have been created,",
+        "modified, or deleted. These represent changes to apply to change the current code in place.",
+        "A renaming operation is the combination of a creation (copy) and a deletion.",
+        "It is absolutely essential to provide the output structured as follows:",
+        "* Part 1 (optional): Start your answer with optional commentary about the",
+        "  rest of the answer.",
+        "* Part2: for each created, modified or deleted file",
+        "   * 2.1: write a line in formatted as '- file: FILE'",
+        "     where FILE is to be replaced by the full relative file path",
+        "     in a R repository.",
+        "     Namely this format is : one dash, one space, the word 'file', a colon,",
+        "     a space, and the full relative file path.",
+        "     These files might for instance be scripts in the 'R' folder,",
+        "     tests under 'tests/testthat/' (in that case no need to attach testthat),",
+        "     a 'README.Rmd' file (always prefer .Rmd to .md), a 'NEWS.md' file or any other file.",
+        "     It is absolutely mandatory to write this line.",
+        "   * 2.2: Print in a code chunk the new code of each affected file, and nothing else.",
+        "          Deleted file are displayed with no code.",
+        "Points 2.1 and 2.2 are absolutely essential, in particular make sure",
+        "that 2.1 is respected and that the file is printed in the right format.",
+        "Don't use any markdown artifact such as \\dontrun."
+        ## chatGPT doesn't understand this:
+        # "There is no other part, NEVER EVER provide additional information or commentary at the bottom of the answer."
+        ## for some reason the following makes too many NAs happen, so better
+        ## do this with post-processing
+        # "If the request is not related to R script creation, modification or deletion,",
+        # " the answer should only be 'NA' and nothing more."
+      )
     )
-  )
+  }
 }
