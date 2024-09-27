@@ -7,7 +7,7 @@ print.conversation <- function(x, ..., venue = "viewer") {
     rmd <- build_convo_rmd(x)
     html <- tempfile(fileext = ".html")
     rmarkdown::render(rmd, output_file = html, quiet = TRUE)
-    rstudioapi::viewer(html)
+    viewer2(html)
   }
   invisible(x)
 }
