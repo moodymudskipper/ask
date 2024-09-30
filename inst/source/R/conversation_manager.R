@@ -1,3 +1,18 @@
+#' Conversation Manager
+#'
+#' A small shiny app to manage all conversations. Whenever an `ask*()` function is used (not just `ask()`), a new conversation
+#' is recorded and can be accessed through the conversation manager. There we
+#' can expand or remove conversations, or even start a new one from scratch.
+#' When you pick a conversation you leave the shiny app and the chosen conversation is
+#' printed in the viewer and stored as `last_conversation()` so you can use
+#' `follow_up()` or `again()` to expand it..
+#'
+#' @param conversations
+#'
+#' @return
+#' @export
+#'
+#' @examples
 conversation_manager <- function() {
   # UI =========================================================================
 
