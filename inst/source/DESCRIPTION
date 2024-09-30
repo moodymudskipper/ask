@@ -36,5 +36,6 @@ Suggests:
     constructive,
     clipr,
     gmailr,
-    testthat (>= 3.0.0)
+    testthat (>= 3.0.0),
+    rvest
 Config/testthat/edition: 3

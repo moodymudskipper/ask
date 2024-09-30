@@ -171,9 +171,15 @@ context_tibble <- function() {
 #' @return An object of class "ask_context"
 #' @param url An url
 #' @export
-context_url <- function(url) {
+context_url <- function(url, only_text =  TRUE) {
   tmp <- tempfile(fileext = ".html")
-  download.file(url, tmp)
-  context('URL: {url}' := c("```", readLines(tmp, warn = FALSE), "```"))
+  download.file(url, tmp, quiet = TRUE)
+  if (only_text) {
+    rlang::check_installed("rvest")
+    text <- rvest::html_text(rvest::read_html(tmp))
+  } else {
+    text <- readLines(tmp, warn = FALSE)
+  }
+  context('URL: {url}' := c("```", text , "```"))
 }
 
