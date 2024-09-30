@@ -23,7 +23,7 @@ context_package <- function(
     code = FALSE,
     vignettes = FALSE) {
 
-  pkgdir <- system.file(package = pkg)
+  pkgdir <- base::system.file(package = pkg, lib.loc = .libPaths())
   list.files(pkgdir, recursive = TRUE)
 
   contexts <- list()

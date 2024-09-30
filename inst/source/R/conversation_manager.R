@@ -7,12 +7,8 @@
 #' printed in the viewer and stored as `last_conversation()` so you can use
 #' `follow_up()` or `again()` to expand it..
 #'
-#' @param conversations
-#'
-#' @return
+#' @return A conversation
 #' @export
-#'
-#' @examples
 conversation_manager <- function() {
   # UI =========================================================================
 

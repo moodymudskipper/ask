@@ -170,6 +170,7 @@ context_tibble <- function() {
 #'
 #' @return An object of class "ask_context"
 #' @param url An url
+#' @param only_text Whether to cleanup the html and extract the text only
 #' @export
 context_url <- function(url, only_text =  TRUE) {
   tmp <- tempfile(fileext = ".html")
