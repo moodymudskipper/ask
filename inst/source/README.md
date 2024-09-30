@@ -3,110 +3,171 @@
 
 # ask
 
-{ask} is designed to ask R anything with minimal effort. This includes
-changing code in place and sending commands to the terminal. To do so we
-use natural language (typed or spoken), and simple well documented
-functions with nice names and good defaults.
+{ask} anwsers natural language queries trough diverse actions (not just
+a text answer as is done by simpler interfaces to LLMs) using optional
+contextual information.
 
-Things we can do :
+The function you use decides the type of action, it takes the query as
+its first argument :
 
-- ask to document a function in place
-- ask to write tests for a functions
-- refactor a function
-- summarize the latest git commits
-- split a script into several scripts
+- `ask()`: Text output through a UI in the viewer pane
+- `ask_in_place()`: Script edits
+- `ask_clipboard()`: Text output copied to the clipboard
+- `ask_terminal()`: Copy a command to the terminal
+- `ask_tibble()`, `ask_numeric()`, `ask_boolean()`: Actual R objects
+- `ask_open()`: Open a script
+- `ask_smart()`: Anything, will run a first API call to guess which
+  function and context you need, and a second to actually answer the
+  query.
 
-It is built on top chatgpt (default) or llama for now. chatGPT 4o gives
-impressive results, The small llama model doesn’t perform that well
-unfortunately and I haven’t tried the bigger ones.
+The context is provided as a second argument, and we have a collection
+of function to make this easy.
 
-It’s in progress and I don’t worry too much about breaking things or
-renaming functions. But it’s definitely already useful, I’ve actually
-used it already to design itself!
+- `context_repo()`: Consider your active repo
+- `context_package()`: Consider any package
+- `context_script()`: Consider the active script, or any given script
+- `context_clipboard`: Use clipboard content as context
+- `context_url`: Use html content of url as context
+- … (many more)
+
+It is built on top of chatgpt (default) or llama for now.
 
 ## Installation
 
-install with:
+Install with:
 
 ``` r
 pak::pak("moodymudskipper/ask")
 ```
 
-You’ll also need a chatgpt api key and/or to install llama.
+You’ll need either:
 
-For the speech to text feature you’ll need pythin and might need:
+- an OpenAI API key linked to a credit card :
+  <https://openai.com/index/openai-api/>
+- An installation of Ollama : <https://ollama.com/download>
 
-    brew install portaudio
-    pip install SpeechRecognition
-    pip install pyAudio
+A quick comparison of *gpt-4o* (OpenAI) and *llama3.1* (Ollama)
+according to just me.
 
-The first one for MacOS only, not sure about other systems, hopefully
-the errors will guide you, use the `ask()` function!
+|                      | OpenAI   | Ollama            |
+|----------------------|----------|-------------------|
+| Result relevance     | ⭐⭐⭐⭐ | ⭐⭐⭐            |
+| Change code in place | ⭐⭐⭐   | 🌜                |
+| Speed                | ⭐⭐⭐   | ⭐⭐              |
+| Data protection      | ⭐⭐     | ⭐⭐⭐⭐ (local!) |
+| Price                | 💰       | 🆓                |
 
-## Simple cases
+## ask, follow up and build a conversation
 
-When we don’t providing a `context` argument, the package is a simple
-interface to the API, with a system to cache the last result so the use
-is very comfortable
+`ask()` a question to start a conversation
 
 ``` r
 library(ask)
-
-ask("where is the Eiffel tower?")
-#> The Eiffel Tower is located in Paris, France. It is situated on the Champ de Mars near the Seine River. The exact address is Champ de Mars, 5 Avenue Anatole France, 75007 Paris, France.
+ask("where is the Eiffel tower? 1 sentence")
 ```
 
-``` r
+![](inst/readme_ask1.png)
 
-follow_up("is it high?")
-#> Yes, the Eiffel Tower is quite tall. It stands at a height of approximately 330 meters (1,083 feet), including its antennas. When it was completed in 1889, it was the tallest man-made structure in the world until the completion of the Chrysler Building in New York City in 1930. The tower has three levels that are accessible to the public, with the highest observation deck located at about 276 meters (906 feet) above the ground, offering spectacular views of Paris.
+To follow up a query, no need to store the previous output, we keep it
+in a global variable (accessible with `last_conversation()`) so you
+might simply call `follow_up()`.
+
+``` r
+follow_up("is it tall? 1 sentence")
 ```
 
-``` r
+![](inst/readme_ask2.png)
 
+If you’re not happy with an answer you might ask again. This will
+replace the latest follow up rather than add an extra message as would
+be the case if we reran the last command.
+
+``` r
 again()
-#> Your question is quite broad and lacks context. "Is it high?" could refer to a variety of things, such as altitude, temperature, price, or even a person's state of being. Could you please provide more details or clarify what specifically you're asking about? This will help me give you a more accurate and useful response.
 ```
 
-## Speech to text
+![](inst/readme_ask3.png)
 
-If no input is provided we use speech to text, say “stop listening” to
-interrupt the recording, or wait until the time out threshold is
-reached.
+To access previous conversation you might call `conversation_manager()`,
+it will open a shiny app in the viewer where you can browse your
+history, continue a conversation or pick one to print and continue with
+`follow_up()` or `again()`
+
+## Examples
 
 ``` r
-ask() # ask a question
+ask(
+  "What S3 methods does this register? just a bullet list", 
+  context_script(system.file("NAMESPACE", package = "ask"))
+)
 ```
 
-## Using contexts
-
-More interesting however is to ask with a context, context objects are
-basically tools to build system messages (directives that sets the
-context or behavior for the model) often using data like file content,
-git history, active script etc…
+![](inst/readme_ask4.png)
 
 ``` r
-# run manually after the README was done
-ask("what is this file about, in one sentence?", context = context_script())
-# This file is a README script for the `ask` R package that explains its goals, installation process, usage examples, and future development ideas.
-ask("what are my last commits about?", context_commits(n = 2))
+# this works because the package is small enough!
+ask(
+    "how to set environment variables locally using this package? 1 sentence", 
+    context_package("withr")
+)
 ```
 
-(We could also have called
-`ask_script("what is this file about, in one sentence?")` here)
+![](inst/readme_ask5.png)
 
-Here are some contexts that you might find useful:
+Some contexts are too big, this happens often with `context_package()`
+or `context_repo()`.
 
-- `context_script()`: Active script by default, but we can provide any
-  path
-- `context_repo()`: All R scripts of the repo, README, NAMESPACE,
-  DESCRIPTION, LICENSE, LICENSE.md. This might be too much for your LLM
-  context window if you have a repo of a decent size.
-- `context_session_info()` Basically the output of `SessionInfo()`
-- `context_gmail()` : Email threads, you probably need to restrict
-  `num_results`
-- `context_diff()` : Uncommitted changes
-- `context_commits()` : Committed changes
+``` r
+ask(
+    "what version is installed and what features were added for this version? 1 sentence", 
+    context_package("rlang")
+)
+#> Error in `response_data()`:
+#> ! Request too large for gpt-4o in organization org-Q6n98iXzy6UPHiel732RUDnh on tokens per min (TPM): Limit 30000, Requested 151125. The input or output tokens must be reduced in order to run successfully. Visit https://platform.openai.com/account/rate-limits to learn more.
+```
+
+In these cases we can sometimes manage the context window. In the case
+of `context_package()` code is not included by default but the help
+files are and they sometimes take too many tokens for a LLM query.
+
+``` r
+ask(
+    "what version is installed and what features were added for this version? 1 sentence", 
+    context_package("rlang", help_files = FALSE)
+)
+```
+
+![](inst/readme_ask6.png)
+
+``` r
+ask_tibble(
+    "extract the key dates and events", 
+    context_url("https://en.wikipedia.org/wiki/R_(programming_language)")
+)
+#> # A tibble: 3 × 2
+#>   date              event                              
+#>   <chr>             <chr>                              
+#> 1 August 1993       Posted a binary of R on StatLib    
+#> 2 December 5, 1997  R became a GNU project             
+#> 3 February 29, 2000 First official 1.0 version released
+```
+
+``` r
+# simulate clipboard use
+clipr::write_clip(
+  "Grocery list: 2 apples, 1 banana, 7 carrots",
+  allow_non_interactive = TRUE
+  )
+ask_numeric("How many fruits will I buy ?", context_clipboard())
+#> [1] 3
+```
+
+``` r
+# this was run manually (not reproducible because of context and output)
+ask_terminal("what git command can I run to check would did the latest changes to the `ask()` function?", context_repo())
+```
+
+![](inst/readme_terminal.png)
 
 ## Update the code base in place
 
@@ -135,71 +196,12 @@ and replaces the cache.
 
 “ram” is a special value to store the cache in memory rather than disk.
 
-## Returning R objects
+## Speech to text
 
-We have some functions to return objects of given types. If you use
-cache you can write reproducible scripts using those.
-
-``` r
-ask_numeric("How many dwarves in Snow White?")
-#> [1] 7
-```
+If no input is provided we use speech to text, to end either click on
+“Done” or say “stop listening”. At the moment this only works on macOS
+and if Chrome is installed.
 
 ``` r
-
-ask_boolean("Do birds sing?")
-#> [1] TRUE
+ask() # ask a question
 ```
-
-``` r
-
-ask_boolean("Is the Earth flat?")
-#> [1] FALSE
-```
-
-``` r
-
-ask_boolean("Does God exist")
-#> [1] NA
-```
-
-``` r
-
-ask_boolean("potatoe")
-#> [1] NA
-```
-
-``` r
-
-ask_tibble("Snow White Dwarves + favourite pizza")
-#> # A tibble: 7 × 2
-#>   dwarf   favourite_pizza
-#>   <chr>   <chr>          
-#> 1 Dopey   Margherita     
-#> 2 Grumpy  Pepperoni      
-#> 3 Happy   BBQ Chicken    
-#> 4 Sleepy  Vegetarian     
-#> 5 Bashful Hawaiian       
-#> 6 Sneezy  Four Cheese    
-#> 7 Doc     Marinara
-```
-
-``` r
-
-ask_tibble("gdps of small countries")
-#> # A tibble: 5 × 2
-#>   country            gdp
-#>   <chr>            <dbl>
-#> 1 Tuvalu             42 
-#> 2 Nauru             133.
-#> 3 Kiribati          198.
-#> 4 Marshall Islands  244.
-#> 5 Palau             268.
-```
-
-## Terminal operations
-
-Because copying and pasting to the terminal is a pain `ask_terminal()`
-will do it for you, with commands taking into account your context if
-you provide it. It doesn’t run those as this would be unsafe, so you’ll
-still have to press Enter.
