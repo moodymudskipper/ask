@@ -4,10 +4,12 @@
 \alias{context_url}
 \title{Contextualize an url}
 \usage{
-context_url(url)
+context_url(url, only_text = TRUE)
 }
 \arguments{
 \item{url}{An url}
+
+\item{only_text}{Whether to cleanup the html and extract the text only}
 }
 \value{
 An object of class "ask_context"

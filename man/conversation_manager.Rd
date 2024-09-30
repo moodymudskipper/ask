@@ -6,8 +6,8 @@
 \usage{
 conversation_manager()
 }
-\arguments{
-\item{conversations}{}
+\value{
+A conversation
 }
 \description{
 A small shiny app to manage all conversations. Whenever an \verb{ask*()} function is used (not just \code{ask()}), a new conversation
