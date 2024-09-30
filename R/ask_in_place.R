@@ -43,7 +43,15 @@ follow_up_in_place <- function(prompt = listen(), context = NULL, conversation =
 build_file_chunks_from_answer <- function(content, model = "gpt-4o-2024-08-06") {
   content_is_structured <- is.list(content)
   if (content_is_structured) {
-    chunks <- jsonlite::fromJSON(content[[1]]$`function`$arguments, simplifyDataFrame = FALSE)$changes
+    if (!is.data.frame(content)) content <- content[[1]]
+    content <- content$`function`$arguments
+    # sometimes, randomly, we get a vector rather than a single element, so we have
+    # to repair it
+    if (length(content) > 1) {
+      inside <- gsub(r"[^\{"changes": \[(.*)\]\}$]", "\\1", content)
+      content <- sprintf(r"[{"changes": [%s]}]", paste(inside, collapse = ","))
+    }
+    chunks <- jsonlite::fromJSON(content, simplifyDataFrame = FALSE)$changes
     return(chunks)
   }
 

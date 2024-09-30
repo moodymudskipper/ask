@@ -79,8 +79,16 @@ if (model_family(convo$data$model[[1]]) == "gpt") {
   answers <- convo$data$response
 }
 make_chunk <- function(content, type, last = FALSE) {
-  if (is.data.frame(content)) {
-    content <- jsonlite::prettify(content$`function`$arguments)
+  if (is.list(content)) {
+    if (!is.data.frame(content)) content <- content[[1]]
+    content <- content$`function`$arguments
+    # sometimes, randomly, we get a vector rather than a single element, so we have
+    # to repair it
+    if (length(content) > 1) {
+      inside <- gsub(r"[^\{"changes": \[(.*)\]\}$]", "\\1", content)
+      content <- sprintf(r"[{"changes": [%s]}]", paste(inside, collapse = ","))
+    }
+    content <- jsonlite::prettify(content)
     content <- sprintf("```json\n%s\n```", content)
   }
 
