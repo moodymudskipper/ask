@@ -26,6 +26,6 @@ ask_clipboard <- function(
     api_key = api_key
   )
   answer <- extract_last_answer(conversation)
-  clipr::write_clip(answer)
+  clipr::write_clip(answer, allow_non_interactive = TRUE)
   invisible(conversation)
 }

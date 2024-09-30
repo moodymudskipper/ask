@@ -4,7 +4,7 @@
 #' @export
 context_clipboard <- function() {
   rlang::check_installed("clipr")
-  clipboard_content <- clipr::read_clip()
+  clipboard_content <- clipr::read_clip(allow_non_interactive = TRUE)
 
 
   # Check if the clipboard content is valid R code
