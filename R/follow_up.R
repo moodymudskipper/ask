@@ -18,6 +18,7 @@ follow_up <- function(
     seed = NULL,
     temperature = NULL,
     top_p = NULL,
+    image = NULL,
     cache = getOption("ask.cache"),
     api_key = Sys.getenv("OPENAI_API_KEY")) {
   # FIXME: check that we stay in the same model family
@@ -31,6 +32,7 @@ follow_up <- function(
     seed = seed %||% last$seed,
     temperature = temperature %||% last$temperature,
     top_p = top_p %||% last$top_p,
+    image = image,
     cache = cache,
     api_key = api_key
   )

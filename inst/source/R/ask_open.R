@@ -15,6 +15,7 @@ ask_open <- function(
     seed = NULL,
     temperature = 1,
     top_p = 1,
+    image = NULL,
     cache = getOption("ask.cache"),
     api_key = Sys.getenv("OPENAI_API_KEY")
 ) {
@@ -28,6 +29,7 @@ ask_open <- function(
     seed = seed,
     temperature = temperature,
     top_p = top_p,
+    image = image,
     cache = cache,
     api_key = api_key
   )
@@ -46,11 +48,12 @@ ask_open <- function(
 
 context_open <- function() {
   content <- c(
-    "You are a helpful R assistant.",
-    "Your task is to provide a list of files that match the given description.",
-    "The list should only contain the relative paths of the files, separated by new lines.",
-    "The output should not include any other commentary or explanation, just the file paths.",
-    "If no files are relevant, return 'NA'."
+    "You are a helpful R assistant.\n",
+    "Your task is to provide a list of files that match the given description.\n",
+    "The list should only contain the relative paths of the files, separated by new lines.\n",
+    "The output should not include any other commentary or explanation, just the file paths.\n",
+    "If no files are relevant, return 'NA'.\n"
   )
   context("Output format" = content)
 }
+

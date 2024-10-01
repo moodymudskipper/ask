@@ -14,6 +14,7 @@
 #' @param top_p Choose high `top_p` for creative applications like storytelling,
 #'   poetry, or brainstorming. Choose low `top_p` for applications requiring
 #'   precision and coherence, such as technical writing, factual prompt, or summarization.
+#' @param image Path or URL to image to provide. Only considered for gpt models.
 #' @param seed The seed used by the model, makes things more reproducible, but
 #'   not completely, due to the nature of LLMs. See `cache` to work around
 #'   that.
@@ -30,6 +31,7 @@ ask <- function(
     seed = NULL,
     temperature = 1,
     top_p = 1,
+    image = NULL,
     cache = getOption("ask.cache"),
     api_key = Sys.getenv("OPENAI_API_KEY")
     ) {
@@ -41,6 +43,7 @@ ask <- function(
     seed = seed,
     temperature = temperature,
     top_p = top_p,
+    image = image,
     cache = cache,
     api_key = api_key
   )
