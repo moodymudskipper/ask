@@ -12,6 +12,7 @@ follow_up(
   seed = NULL,
   temperature = NULL,
   top_p = NULL,
+  image = NULL,
   cache = getOption("ask.cache"),
   api_key = Sys.getenv("OPENAI_API_KEY")
 )
@@ -29,6 +30,8 @@ message that define the behavior, tone or focus of the assistant.}
 
 \item{model, seed, temperature, top_p}{inherited from the last item
 of \code{conversation} by default}
+
+\item{image}{Path or URL to image to provide. Only considered for gpt models.}
 
 \item{cache}{A path where to cache the outputs, or "ram" to store them
 in RAM. useful to spare tokens and to have reproducible code.}

@@ -10,8 +10,9 @@ Description: Interface to do useful things in R with LLMs.
 License: MIT + file LICENSE
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.3.2
+RoxygenNote: 7.3.2.9000
 Imports: 
+    base64enc,
     curl,
     diffviewer,
     dplyr,
