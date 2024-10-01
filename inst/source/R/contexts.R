@@ -106,12 +106,6 @@ context_gmail_message <- function(msg) {
   context("message" = capture.output(msg))
 }
 
-#' Request a numeric output
-#'
-#' @param unit unit
-#'
-#' @return An object of class "ask_context"
-#' @export
 context_numeric <- function(unit = NULL) {
   if (is.null(unit)) {
     middle_part <- c(
@@ -142,10 +136,6 @@ context_numeric <- function(unit = NULL) {
   context("Output format" = content)
 }
 
-#' Request a boolean output
-#'
-#' @return An object of class "ask_context"
-#' @export
 context_boolean <- function() {
   content <- c(
     "You are a helpful R assistant.",
