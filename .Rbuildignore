@@ -2,5 +2,5 @@
 ^\.Rproj\.user$
 ^README\.Rmd$
 ^LICENSE\.md$
-ignore
-__pycache__
+^ignore
+^README_cache
