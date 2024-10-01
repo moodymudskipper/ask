@@ -11,6 +11,7 @@ ask_clipboard <- function(
     seed = NULL,
     temperature = 1,
     top_p = 1,
+    image = NULL,
     cache = getOption("ask.cache"),
     api_key = Sys.getenv("OPENAI_API_KEY")
     ) {
@@ -22,6 +23,7 @@ ask_clipboard <- function(
     seed = seed,
     temperature = temperature,
     top_p = top_p,
+    image = image,
     cache = cache,
     api_key = api_key
   )
@@ -29,3 +31,4 @@ ask_clipboard <- function(
   clipr::write_clip(answer, allow_non_interactive = TRUE)
   invisible(conversation)
 }
+

@@ -8,7 +8,8 @@ return_cached <- function(
     seed,
     temperature,
     top_p,
-    n) {
+    n,
+    image) {
   if (cache %in% names(globals$memoised)) {
     memoised_fun <- globals$memoised[[cache]]
     if (forget) {
@@ -20,7 +21,8 @@ return_cached <- function(
         seed = seed,
         temperature = temperature,
         top_p = top_p,
-        n = n
+        n = n,
+        image = image
       )
     }
   } else {
@@ -43,7 +45,8 @@ return_cached <- function(
       seed = seed,
       temperature = temperature,
       top_p = top_p,
-      n = n
+      n = n,
+      image = image
     )
   )
 }

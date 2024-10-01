@@ -13,6 +13,7 @@ ask_impl <- function(
     temperature = 1,
     top_p = 1,
     n = 1,
+    image = NULL,
     cache = NULL,
     tools = NULL,
     api_key = Sys.getenv("OPENAI_API_KEY")) {
@@ -54,7 +55,8 @@ ask_impl <- function(
         seed,
         temperature,
         top_p,
-        n)
+        n,
+        image)
     )
     globals$last_conversation <- cached
     return(cached)
@@ -77,11 +79,23 @@ ask_impl <- function(
     } else {
       messages = list(list(role = "user", content = prompt))
     }
+    image64 <- NULL
+    if (!is.null(image)) {
+      image64 <- base64enc::base64encode(image)
+      messages[[length(messages)]]$content <- list(
+        list(type = "text", text = messages[[length(messages)]]$content),
+        list(
+          type = 'image_url',
+          image_url = list(url = sprintf("data:image/jpeg;base64,%s", image64))
+        )
+      )
+    }
+
     if (!is.null(conversation)) {
       old_messages <- lapply(
         split(conversation, seq(nrow(conversation))),
         function(x) {
-          list(
+          out <- list(
             list(
               role = "user",
               content = x$prompt
@@ -91,6 +105,19 @@ ask_impl <- function(
               content = x$data$choices$message$content
             )
           )
+          if (!is.null(x$image[[1]])) {
+            out[[1]]$content <- list(
+              list(
+                type = "text",
+                text = out[[1]]$content
+              ),
+              list(
+                type = "image_url",
+                image_url = list(url = sprintf("data:image/jpeg;base64,%s", x$image[[1]]))
+              )
+            )
+          }
+          out
         })
       old_messages <- unlist(unname(old_messages), recursive = FALSE)
       messages <- c(old_messages, messages)
@@ -126,6 +153,14 @@ ask_impl <- function(
 
   # conversation ---------------------------------------------------------------
   conversation <-
-    append_conversation(conversation, prompt, seed, temperature, top_p, response)
+    append_conversation(
+      conversation,
+      prompt,
+      seed,
+      temperature,
+      top_p,
+      response,
+      image = image64
+    )
   conversation
 }
