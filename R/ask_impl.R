@@ -18,6 +18,7 @@ ask_impl <- function(
     tools = NULL,
     api_key = Sys.getenv("OPENAI_API_KEY")) {
   if (rlang::is_na(seed)) seed <- NULL
+  image64 <- NULL
   # process prompt and context -------------------------------------------------
   forget <- FALSE
   if (is.null(prompt)) {
@@ -79,7 +80,6 @@ ask_impl <- function(
     } else {
       messages = list(list(role = "user", content = prompt))
     }
-    image64 <- NULL
     if (!is.null(image)) {
       image64 <- base64enc::base64encode(image)
       messages[[length(messages)]]$content <- list(
