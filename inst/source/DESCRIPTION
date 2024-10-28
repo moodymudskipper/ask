@@ -38,5 +38,6 @@ Suggests:
     clipr,
     gmailr,
     testthat (>= 3.0.0),
-    rvest
+    rvest,
+    pdftools
 Config/testthat/edition: 3
