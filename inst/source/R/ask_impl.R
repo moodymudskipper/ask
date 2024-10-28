@@ -146,8 +146,67 @@ ask_impl <- function(
       model = model,
       seed = seed,
       temperature = temperature,
+      top_p = top_p
+    )
+  } else if (model_family == 'deepseek') {
+    if (!is.null(context)) {
+      messages = list(
+        list(role = "system", content = context),
+        list(role = "user", content = prompt)
+      )
+    } else {
+      messages = list(list(role = "user", content = prompt))
+    }
+    if (!is.null(image)) {
+      image64 <- base64enc::base64encode(image)
+      messages[[length(messages)]]$content <- list(
+        list(type = "text", text = messages[[length(messages)]]$content),
+        list(
+          type = 'image_url',
+          image_url = list(url = sprintf("data:image/jpeg;base64,%s", image64))
+        )
+      )
+    }
+
+    if (!is.null(conversation)) {
+      old_messages <- lapply(
+        split(conversation, seq(nrow(conversation))),
+        function(x) {
+          out <- list(
+            list(
+              role = "user",
+              content = x$prompt
+            ),
+            list(
+              role = "assistant",
+              content = x$data$choices$message$content
+            )
+          )
+          if (!is.null(x$image[[1]])) {
+            out[[1]]$content <- list(
+              list(
+                type = "text",
+                text = out[[1]]$content
+              ),
+              list(
+                type = "image_url",
+                image_url = list(url = sprintf("data:image/jpeg;base64,%s", x$image[[1]]))
+              )
+            )
+          }
+          out
+        })
+      old_messages <- unlist(unname(old_messages), recursive = FALSE)
+      messages <- c(old_messages, messages)
+    }
+
+    response <- ask_response_deepseek(
+      messages = messages,
+      model = model,
+      seed = seed,
+      temperature = temperature,
       top_p = top_p,
-      cache = cache
+      tools = tools
     )
   }
 
@@ -164,3 +223,4 @@ ask_impl <- function(
     )
   conversation
 }
+
