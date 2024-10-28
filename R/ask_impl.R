@@ -80,13 +80,16 @@ ask_impl <- function(
     } else {
       messages = list(list(role = "user", content = prompt))
     }
-    if (!is.null(image)) {
-      image64 <- base64enc::base64encode(image)
-      messages[[length(messages)]]$content <- list(
-        list(type = "text", text = messages[[length(messages)]]$content),
-        list(
-          type = 'image_url',
-          image_url = list(url = sprintf("data:image/jpeg;base64,%s", image64))
+    if (length(image)) {
+      image64 <- lapply(image, base64enc::base64encode)
+      messages[[length(messages)]]$content <- c(
+        list(list(type = "text", text = messages[[length(messages)]]$content)),
+        lapply(image64, function(x) {
+          list(
+            type = 'image_url',
+            image_url = list(url = sprintf("data:image/jpeg;base64,%s", x))
+          )
+        }
         )
       )
     }
@@ -105,16 +108,18 @@ ask_impl <- function(
               content = x$data$choices$message$content
             )
           )
-          if (!is.null(x$image[[1]])) {
-            out[[1]]$content <- list(
-              list(
+          if (length(x$image[[1]])) {
+            out[[1]]$content <- c(
+              list(list(
                 type = "text",
                 text = out[[1]]$content
-              ),
-              list(
-                type = "image_url",
-                image_url = list(url = sprintf("data:image/jpeg;base64,%s", x$image[[1]]))
-              )
+              )),
+              lapply(x$image[[1]], function(img) {
+                list(
+                  type = "image_url",
+                  image_url = list(url = sprintf("data:image/jpeg;base64,%s", img))
+                )
+              })
             )
           }
           out
