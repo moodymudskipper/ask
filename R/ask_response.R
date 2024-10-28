@@ -40,8 +40,7 @@ ask_response_ollama <- function(
     seed = NULL,
     temperature = 1,
     top_p = 1,
-    format = NULL,
-    cache = getOption("ask.cache")) {
+    format = NULL) {
   api_url <- "http://localhost:11434/api/generate"
   headers <- httr::add_headers(
     `Content-Type` = "application/json"
@@ -71,3 +70,69 @@ ask_response_ollama <- function(
   )
   response
 }
+
+ask_response_deepseek <- function(
+    messages,
+    model = getOption("ask.model", "gpt-4o"),
+    seed = NULL,
+    temperature = 1,
+    top_p = 1,
+    n = 1,
+    tools = NULL) {
+  api_url <- "http://localhost:11434/api/generate"
+  headers <- httr::add_headers(
+    `Content-Type` = "application/json",
+    Authorization = "Bearer"
+  )
+  body <- list(
+    model = model,
+    messages = messages,
+    # temperature = temperature,
+    # top_p = top_p,
+    stream = FALSE  # Set to false to get the complete response at once
+    #tools = tools
+  )
+  if (is.null(tools)) body$tools <- NULL
+  response <- httr::POST(
+    url = api_url,
+    body = jsonlite::toJSON(body, auto_unbox = TRUE),
+    encode = "json",
+    config = headers
+  )
+  raw_content <- httr::content(response, "raw")
+  char_content <- rawToChar(raw_content)
+  data <- jsonlite::fromJSON(char_content)
+  browser()
+
+  response
+}
+
+# --data-raw '{
+#   "messages": [
+#     {
+#       "content": "You are a helpful assistant",
+#       "role": "system"
+#     },
+#     {
+#       "content": "Hi",
+#       "role": "user"
+#     }
+#   ],
+#   "model": "deepseek-chat",
+#   "frequency_penalty": 0,
+#   "max_tokens": 2048,
+#   "presence_penalty": 0,
+#   "response_format": {
+#     "type": "text"
+#   },
+#   "stop": null,
+#   "stream": false,
+#   "stream_options": null,
+#   "temperature": 1,
+#   "top_p": 1,
+#   "tools": null,
+#   "tool_choice": "none",
+#   "logprobs": false,
+#   "top_logprobs": null
+# }'
+
