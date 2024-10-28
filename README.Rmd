@@ -52,16 +52,21 @@ You'll need either:
 
 * an OpenAI API key linked to a credit card : https://openai.com/index/openai-api/
 * An installation of Ollama : https://ollama.com/download
+  * Download and install the app
+  * In the terminal, call for instance `ollama pull llama3.2` or `ollama pull llama3.2:1b` to pull
+    a specific model (check what models are available on https://ollama.com/library)
+
+You may provide a `model` argument to any `ask*()` question. The default model at the moment is "gpt-4o" but can be changed by setting for stance `options(ask.model="llama3.2")`.
 
 A quick comparison of  *gpt-4o* (OpenAI) and *llama3.1* (Ollama) according to just me.
 
-|                      | OpenAI                        | Ollama |
+|                      | gpt-4o                        | llama3.1 |
 |----------------------|-------------------------------|--------|
 | Result relevance     | `r strrep(emo::ji("star"),4)` | `r strrep(emo::ji("star"),3)` |
-| Change code in place | `r strrep(emo::ji("star"),3)` |  `r strrep(emo::ji("last_quarter_moon_with_face"),1)` |
+| Change code in place | `r strrep(emo::ji("star"),3)` |  not practical |
 | Speed                | `r strrep(emo::ji("star"),3)` | `r strrep(emo::ji("star"),2)` |
 | Data protection      | `r strrep(emo::ji("star"),2)` | `r strrep(emo::ji("star"),4)` (local!)|
-| Price                | `r strrep(emo::ji("moneybag"),1)` | `r strrep(emo::ji("free"),1)` |
+| Price                | `r strrep(emo::ji("moneybag"),1)` by token | `r strrep(emo::ji("free"),1)` |
 
 ## ask, follow up and build a conversation
 

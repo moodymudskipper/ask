@@ -4,3 +4,4 @@
 ^LICENSE\.md$
 ^ignore
 ^README_cache
+^\.httr-oauth$

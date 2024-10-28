@@ -45,6 +45,14 @@ You’ll need either:
 - an OpenAI API key linked to a credit card :
   <https://openai.com/index/openai-api/>
 - An installation of Ollama : <https://ollama.com/download>
+  - Download and install the app
+  - Check what models are available on <https://ollama.com/library>
+  - Call for instance `ollama pull llama3.2` or
+    `ollama pull llama3.2:1b` to pull a specific model
+
+You may provide a `model` argument to any `ask*()` question. The default
+model at the moment is “gpt-4o” but can be changed by setting for stance
+`options(ask.model="llama3.2")`.
 
 A quick comparison of *gpt-4o* (OpenAI) and *llama3.1* (Ollama)
 according to just me.
