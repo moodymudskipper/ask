@@ -154,6 +154,81 @@ ask_impl <- function(
       top_p = top_p,
       cache = cache
     )
+  } else if (model_family == "anthropic") {
+    if (!curl::has_internet()) {
+      msg <- "anthropic models require an internet connection"
+      info1 <- "You are not connected"
+      abort(c(msg, x = info1))
+    }
+    messages = list(list(role = "user", content = prompt))
+
+    if (length(image)) {
+      #browser()
+      image64 <- lapply(image, base64enc::base64encode)
+      messages[[length(messages)]]$content <- c(
+        list(list(type = "text", text = messages[[length(messages)]]$content)),
+        lapply(image64, function(x) {
+          list(
+            type = 'image',
+            source = list(
+              type = "base64",
+              media_type = "image/png",
+              data = x
+            )
+          )
+        }
+        )
+      )
+    }
+
+    if (!is.null(conversation)) {
+      old_messages <- lapply(
+        split(conversation, seq(nrow(conversation))),
+        function(x) {
+          out <- list(
+            list(
+              role = "user",
+              content = x$prompt
+            ),
+            list(
+              role = "assistant",
+              content = x$data$content
+            )
+          )
+          if (length(x$image[[1]])) {
+            out[[1]]$content <- c(
+              list(list(
+                type = "text",
+                text = out[[1]]$content
+              )),
+              lapply(x$image[[1]], function(img) {
+                list(
+                  type = "image",
+                  source = list(
+                    type = "base64",
+                    media_type = "image/png",
+                    data = img
+                  )
+                )
+              })
+            )
+          }
+          out
+        })
+      old_messages <- unlist(unname(old_messages), recursive = FALSE)
+      messages <- c(old_messages, messages)
+    }
+
+    response <- ask_response_anthropic(
+      messages = messages,
+      system = context,
+      model = model,
+      seed = seed,
+      temperature = temperature,
+      top_p = top_p,
+      tools = tools,
+      api_key = api_key
+    )
   }
 
   # conversation ---------------------------------------------------------------
