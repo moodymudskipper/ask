@@ -23,7 +23,8 @@ response_data <- function(x) {
     data$context <- list(data$context)
     data <- dplyr::as_tibble(data)
   } else {
-    data$usage <- dplyr::as_tibble(data$usage)
+    # anthropic or openai
+    data$usage <- NULL
     # some versions of the api contain NULL elements
     data <- Filter(Negate(is.null), data)
     data$system_fingerprint <- NULL

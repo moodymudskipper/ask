@@ -71,3 +71,48 @@ ask_response_ollama <- function(
   )
   response
 }
+
+
+# anthropic models :
+# https://docs.anthropic.com/en/docs/about-claude/models
+
+ask_response_anthropic <- function(
+    messages,
+    system,
+    model = getOption("ask.model", "claude-3-5-sonnet-latest"),
+    ...,
+    tools = NULL,
+    api_key = Sys.getenv("ANTHROPIC_API_KEY"),
+    `anthropic-version` = "2023-06-01",
+    `anthropic-beta` = "computer-use-2024-10-22"
+    ) {
+  api_url <- "https://api.anthropic.com/v1/messages"
+  headers <- httr::add_headers(
+    "x-api-key" = api_key,
+    "content-type" = "application/json",
+    "anthropic-version" = `anthropic-version`, # "2023-06-01",
+    "anthropic-beta" = `anthropic-beta` # "computer-use-2024-10-22"
+  )
+
+  # Payload setup
+  # FIXME: transmit parameters from `...` or `api_args` once fixed
+  body <- list(
+    model = "claude-3-5-sonnet-20241022",
+    max_tokens = 1024,
+    messages = messages
+  )
+
+  # defined likw this so we don't add elements when NULL
+  body$tools <- tools
+  body$system <- system
+
+  # API request
+  response <- httr::POST(
+    api_url,
+    headers,
+    body = jsonlite::toJSON(body, auto_unbox = TRUE),
+    encode = "json"
+  )
+
+  response
+}

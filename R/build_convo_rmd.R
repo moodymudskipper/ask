@@ -75,6 +75,13 @@ if (model_family(convo$data$model[[1]]) == "gpt") {
   } else {
     answers <- convo$data$choices$message$content
   }
+} else if (model_family(convo$data$model[[1]]) == "anthropic") {
+  tool_calls <- NULL # convo$data$choices$message$tool_calls
+  if (!is.null(tool_calls) && all(lengths(tool_calls))) {
+    answers <- tool_calls
+  } else {
+    answers <- convo$data$content$text
+  }
 } else {
   answers <- convo$data$response
 }
