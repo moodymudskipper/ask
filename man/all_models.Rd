@@ -2,7 +2,7 @@
 % Please edit documentation in R/all_models.R
 \name{all_models}
 \alias{all_models}
-\title{List OpenAI current models}
+\title{List all current models}
 \usage{
 all_models(api_key = Sys.getenv("OPENAI_API_KEY"))
 }
@@ -13,5 +13,8 @@ all_models(api_key = Sys.getenv("OPENAI_API_KEY"))
 A tibble
 }
 \description{
-List OpenAI current models
+These are all current models from openai, anthropic and ollama. We don't
+guarantee that they all work with ask though as we've tested a limited amount.
+ChatGPT, Claude, and llama models seem to work ok, please open a ticket
+to request further support.
 }

@@ -7,7 +7,7 @@ append_conversation <- function(conversation, prompt, seed, temperature, top_p, 
       seed = seed %||% NA_integer_,
       temperature = temperature,
       top_p = top_p,
-      data = response_data(response),
+      data = list(response_data(response)),
       image = list(image),
       response = list(response)
     )

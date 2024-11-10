@@ -20,25 +20,10 @@ ask_impl <- function(
   if (rlang::is_na(seed)) seed <- NULL
   image64 <- NULL
   # process prompt and context -------------------------------------------------
-  forget <- FALSE
-  if (is.null(prompt)) {
-    forget <- TRUE
-    if (is.null(conversation)) {
-      abort("`prompt` and `conversation` can't be `NULL` at the same time")
-    }
-    conv_len <- nrow(conversation)
-    prompt <- conversation$prompt[[conv_len]]
-    conversation <- conversation[-conv_len,]
-    if (!nrow(conversation)) conversation <- NULL
-  }
-  prompt <- paste(prompt, collapse = "\n")
-  if (!is.null(context) && !is.character(context)) {
-    context <- c(
-      "You are a useful R programming assistant provided the following context.",
-      flatten_context(context)
-    )
-    context <- paste(context, collapse = "\n")
-  }
+  processed <- process_prompt_and_conversation(prompt, conversation)
+  prompt <- processed$prompt
+  conversation <- processed$conversation
+  context <- process_context(context)
 
   # return cached result if relevant -------------------------------------------
   if (!is.null(cache)) {
@@ -64,70 +49,9 @@ ask_impl <- function(
   }
 
   # response -------------------------------------------------------------------
-  # FIXME: higher level wrappers with same inputs?
   model_family <- model_family(model)
   if (model_family == "gpt") {
-    if (!curl::has_internet()) {
-      msg <- "gpt models require an internet connection"
-      info1 <- "You are not connected"
-      abort(c(msg, x = info1))
-    }
-    if (!is.null(context)) {
-      messages = list(
-        list(role = "system", content = context),
-        list(role = "user", content = prompt)
-      )
-    } else {
-      messages = list(list(role = "user", content = prompt))
-    }
-    if (length(image)) {
-      image64 <- lapply(image, base64enc::base64encode)
-      messages[[length(messages)]]$content <- c(
-        list(list(type = "text", text = messages[[length(messages)]]$content)),
-        lapply(image64, function(x) {
-          list(
-            type = 'image_url',
-            image_url = list(url = sprintf("data:image/jpeg;base64,%s", x))
-          )
-        }
-        )
-      )
-    }
-
-    if (!is.null(conversation)) {
-      old_messages <- lapply(
-        split(conversation, seq(nrow(conversation))),
-        function(x) {
-          out <- list(
-            list(
-              role = "user",
-              content = x$prompt
-            ),
-            list(
-              role = "assistant",
-              content = x$data$choices$message$content
-            )
-          )
-          if (length(x$image[[1]])) {
-            out[[1]]$content <- c(
-              list(list(
-                type = "text",
-                text = out[[1]]$content
-              )),
-              lapply(x$image[[1]], function(img) {
-                list(
-                  type = "image_url",
-                  image_url = list(url = sprintf("data:image/jpeg;base64,%s", img))
-                )
-              })
-            )
-          }
-          out
-        })
-      old_messages <- unlist(unname(old_messages), recursive = FALSE)
-      messages <- c(old_messages, messages)
-    }
-
+    messages <- build_openai_messages(prompt, context, image, conversation)
     response <- ask_response_chatgpt(
       messages = messages,
       model = model,
@@ -138,12 +62,7 @@ ask_impl <- function(
       api_key = api_key
     )
   } else if (model_family == "llama") {
-    if (!is.null(conversation)) {
-      llama_context <- conversation$data$context[[nrow(conversation)]]
-    } else {
-      llama_context <- NULL
-    }
-
+    llama_context <- extract_llama_conversation_history(conversation)
     response <- ask_response_ollama(
       prompt = prompt,
       context = context,
@@ -155,70 +74,7 @@ ask_impl <- function(
       cache = cache
     )
   } else if (model_family == "anthropic") {
-    if (!curl::has_internet()) {
-      msg <- "anthropic models require an internet connection"
-      info1 <- "You are not connected"
-      abort(c(msg, x = info1))
-    }
-    messages = list(list(role = "user", content = prompt))
-
-    if (length(image)) {
-      #browser()
-      image64 <- lapply(image, base64enc::base64encode)
-      messages[[length(messages)]]$content <- c(
-        list(list(type = "text", text = messages[[length(messages)]]$content)),
-        lapply(image64, function(x) {
-          list(
-            type = 'image',
-            source = list(
-              type = "base64",
-              media_type = "image/png",
-              data = x
-            )
-          )
-        }
-        )
-      )
-    }
-
-    if (!is.null(conversation)) {
-      old_messages <- lapply(
-        split(conversation, seq(nrow(conversation))),
-        function(x) {
-          out <- list(
-            list(
-              role = "user",
-              content = x$prompt
-            ),
-            list(
-              role = "assistant",
-              content = x$data$content
-            )
-          )
-          if (length(x$image[[1]])) {
-            out[[1]]$content <- c(
-              list(list(
-                type = "text",
-                text = out[[1]]$content
-              )),
-              lapply(x$image[[1]], function(img) {
-                list(
-                  type = "image",
-                  source = list(
-                    type = "base64",
-                    media_type = "image/png",
-                    data = img
-                  )
-                )
-              })
-            )
-          }
-          out
-        })
-      old_messages <- unlist(unname(old_messages), recursive = FALSE)
-      messages <- c(old_messages, messages)
-    }
-
+    messages <- build_anthropic_messages(prompt, context, image, conversation)
     response <- ask_response_anthropic(
       messages = messages,
       system = context,
@@ -240,7 +96,7 @@ ask_impl <- function(
       temperature,
       top_p,
       response,
-      image = image64
+      image = image
     )
   conversation
 }
