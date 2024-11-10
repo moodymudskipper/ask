@@ -28,7 +28,7 @@ follow_up <- function(
     model = conversation_model(conversation),
     image = image,
     cache = cache,
-    api_args = api_args %||% last$api_args,
+    api_args = api_args %||% last$api_args[[1]],
     api_key = api_key
   )
   conversation
