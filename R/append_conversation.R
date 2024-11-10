@@ -1,15 +1,13 @@
 # build conversation from response, cache it, return it
-append_conversation <- function(conversation, prompt, seed, temperature, top_p, response, image) {
+append_conversation <- function(conversation, prompt, response, image, api_args) {
   new_conversation <- dplyr::bind_rows(
     conversation,
     dplyr::tibble(
       prompt = prompt,
-      seed = seed %||% NA_integer_,
-      temperature = temperature,
-      top_p = top_p,
       data = list(response_data(response)),
       image = list(image),
-      response = list(response)
+      response = list(response),
+      api_args = list(api_args)
     )
   )
 

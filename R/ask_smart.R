@@ -15,21 +15,17 @@ ask_smart <- function(
     prompt = listen(),
     context = NULL,
     model = getOption("ask.model", "gpt-4o"),
-    seed = NULL,
-    temperature = 1,
-    top_p = 1,
     cache = getOption("ask.cache"),
-    api_key = Sys.getenv("OPENAI_API_KEY")
+    api_args = NULL,
+    api_key = NULL
 ) {
   context <- context(context, context_smart())
   conversation <- ask(
     prompt,
     context,
     model = getOption("ask.model", "gpt-4o"),
-    seed = seed,
-    temperature = temperature,
-    top_p = top_p,
     cache = cache,
+    api_args = api_args,
     api_key = api_key
   )
   content <- extract_last_answer(conversation)

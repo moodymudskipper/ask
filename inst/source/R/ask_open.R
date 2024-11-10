@@ -12,12 +12,10 @@ ask_open <- function(
     prompt,
     context = NULL,
     model = getOption("ask.model", "gpt-4o"),
-    seed = NULL,
-    temperature = 1,
-    top_p = 1,
     image = NULL,
     cache = getOption("ask.cache"),
-    api_key = Sys.getenv("OPENAI_API_KEY")
+    api_args = NULL,
+    api_key = NULL
 ) {
 
   context <- context(context_open(), context)
@@ -26,11 +24,9 @@ ask_open <- function(
     prompt = prompt,
     context = context,
     model = model,
-    seed = seed,
-    temperature = temperature,
-    top_p = top_p,
     image = image,
     cache = cache,
+    api_args = api_args,
     api_key = api_key
   )
 

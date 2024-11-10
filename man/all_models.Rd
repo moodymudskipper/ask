@@ -4,10 +4,14 @@
 \alias{all_models}
 \title{List all current models}
 \usage{
-all_models(api_key = Sys.getenv("OPENAI_API_KEY"))
+all_models(
+  openai_api_key = Sys.getenv("OPENAI_API_KEY"),
+  only_supported = TRUE
+)
 }
 \arguments{
-\item{api_key}{API key}
+\item{openai_api_key}{an api key for open ai (for other models we use
+webscraping rather than rest APIs to get the list of models)}
 }
 \value{
 A tibble

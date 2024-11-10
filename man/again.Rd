@@ -7,18 +7,16 @@
 again(
   conversation = last_conversation(),
   model = NULL,
-  seed = NULL,
-  temperature = NULL,
-  top_p = NULL,
   cache = getOption("ask.cache"),
-  api_key = Sys.getenv("OPENAI_API_KEY")
+  api_args = NULL,
+  api_key = NULL
 )
 }
 \arguments{
 \item{conversation}{A conversation, initiated by \code{ask()} or followed up by
 \code{follow_up()}}
 
-\item{model, seed, temperature, top_p}{inherited from the last item
+\item{model, api_args}{inherited from the last item
 of \code{conversation} by default}
 
 \item{cache}{A path where to cache the outputs, or "ram" to store them

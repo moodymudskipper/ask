@@ -8,16 +8,13 @@ ask_impl <- function(
     prompt,
     context = NULL,
     conversation = NULL,
-    model = "gpt-4o-2024-08-06",
-    seed = NULL,
-    temperature = 1,
-    top_p = 1,
-    n = 1,
+    model = getOption("ask.model", "gpt-4o"),
     image = NULL,
     cache = NULL,
     tools = NULL,
-    api_key = Sys.getenv("OPENAI_API_KEY")) {
-  if (rlang::is_na(seed)) seed <- NULL
+    api_args = NULL,
+    api_key = NULL) {
+  api_key <- api_key %||% default_api_key(model)
   image64 <- NULL
   # process prompt and context -------------------------------------------------
   processed <- process_prompt_and_conversation(prompt, conversation)
@@ -38,11 +35,8 @@ ask_impl <- function(
         context,
         conversation,
         model,
-        seed,
-        temperature,
-        top_p,
-        n,
-        image)
+        image,
+        api_args = api_args)
     )
     globals$last_conversation <- cached
     return(cached)
@@ -55,10 +49,8 @@ ask_impl <- function(
     response <- ask_response_chatgpt(
       messages = messages,
       model = model,
-      seed = seed,
-      temperature = temperature,
-      top_p = top_p,
       tools = tools,
+      api_args = api_args,
       api_key = api_key
     )
   } else if (model_family == "llama") {
@@ -68,10 +60,8 @@ ask_impl <- function(
       context = context,
       llama_context = llama_context,
       model = model,
-      seed = seed,
-      temperature = temperature,
-      top_p = top_p,
-      cache = cache
+      cache = cache,
+      api_args = api_args
     )
   } else if (model_family == "anthropic") {
     messages <- build_anthropic_messages(prompt, context, image, conversation)
@@ -79,10 +69,8 @@ ask_impl <- function(
       messages = messages,
       system = context,
       model = model,
-      seed = seed,
-      temperature = temperature,
-      top_p = top_p,
       tools = tools,
+      api_args = api_args,
       api_key = api_key
     )
   }
@@ -92,11 +80,9 @@ ask_impl <- function(
     append_conversation(
       conversation,
       prompt,
-      seed,
-      temperature,
-      top_p,
       response,
-      image = image
+      image = image,
+      api_args = api_args
     )
   conversation
 }

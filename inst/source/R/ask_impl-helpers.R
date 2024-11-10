@@ -75,7 +75,6 @@ build_openai_messages <- function(prompt, context, image, conversation) {
 }
 
 build_anthropic_messages <- function(prompt, context, image, conversation) {
-  browser()
   image_content <- function(image) {
     if (is.null(image)) return(NULL)
     lapply(image, function(img) {

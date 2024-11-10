@@ -5,7 +5,7 @@
 #' @inheritParams ask
 #' @param conversation A conversation, initiated by `ask()` or followed up by
 #'   `follow_up()`
-#' @param model,seed,temperature,top_p inherited from the last item
+#' @param model,api_args inherited from the last item
 #' of `conversation` by default
 #'
 #' @return a conversation object
@@ -14,12 +14,10 @@ follow_up <- function(
     prompt = listen(),
     context = NULL,
     conversation = last_conversation(),
-    seed = NULL,
-    temperature = NULL,
-    top_p = NULL,
     image = NULL,
     cache = getOption("ask.cache"),
-    api_key = Sys.getenv("OPENAI_API_KEY")) {
+    api_args = NULL,
+    api_key = NULL) {
   # FIXME: check that we stay in the same model family
 
   last <- conversation[nrow(conversation),]
@@ -28,11 +26,9 @@ follow_up <- function(
     context = context,
     conversation = conversation,
     model = conversation_model(conversation),
-    seed = seed %||% last$seed,
-    temperature = temperature %||% last$temperature,
-    top_p = top_p %||% last$top_p,
     image = image,
     cache = cache,
+    api_args = api_args %||% last$api_args,
     api_key = api_key
   )
   conversation

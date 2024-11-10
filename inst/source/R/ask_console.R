@@ -7,20 +7,19 @@
 #'
 #' @inheritParams ask
 #' @inheritParams follow_up
-#' @param follow_up Whether to automatically follow up in the console, press
-#' Esc or Ctrl+C to exit the chat.
+#' @param follow_up Whether to automatically follow up in the console, this
+#' triggers an interactive prompt that you can exit by pressing
+#' Esc or Ctrl+C..
 #' @return The result from the `ask()` function.
 #' @export
 ask_console <- function(
     prompt = listen(),
     context = NULL,
     model = getOption("ask.model", "gpt-4o"),
-    seed = NULL,
-    temperature = 1,
-    top_p = 1,
     image = NULL,
     cache = getOption("ask.cache"),
-    api_key = Sys.getenv("OPENAI_API_KEY"),
+    api_args = NULL,
+    api_key = NULL,
     follow_up = FALSE
 ) {
   context_lazy <- substitute(context)
@@ -28,11 +27,9 @@ ask_console <- function(
         prompt = prompt,
         context = eval.parent(context_lazy),
         model = model,
-        seed = seed,
-        temperature = temperature,
-        top_p = top_p,
         image = image,
         cache = cache,
+        api_args = api_args,
         api_key = api_key
     )
     print(conversation, venue = "console")
@@ -44,11 +41,9 @@ ask_console <- function(
           context = eval.parent(context_lazy),
           conversation = conversation,
           model = model,
-          seed = seed,
-          temperature = temperature,
-          top_p = top_p,
           image = image,
           cache = cache,
+          api_args = api_args,
           api_key = api_key
         )
         print(conversation, venue = "console")
@@ -64,23 +59,19 @@ follow_up_console <- function(
     context = NULL,
     conversation = last_conversation(),
     model = NULL,
-    seed = NULL,
-    temperature = NULL,
-    top_p = NULL,
     image = NULL,
     cache = getOption("ask.cache"),
-    api_key = Sys.getenv("OPENAI_API_KEY")
+    ap_args = NULL,
+    api_key = NULL
 ) {
     conversation <- follow_up(
         prompt = prompt,
         context = context,
         conversation = conversation,
         model = model,
-        seed = seed,
-        temperature = temperature,
-        top_p = top_p,
         image = image,
         cache = cache,
+        api_args = api_args,
         api_key = api_key
     )
     print(conversation, venue = "console")
