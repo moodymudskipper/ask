@@ -9,19 +9,15 @@
 again <- function(
     conversation = last_conversation(),
     model = NULL,
-    seed = NULL,
-    temperature = NULL,
-    top_p = NULL,
     cache = getOption("ask.cache"),
-    api_key = Sys.getenv("OPENAI_API_KEY")) {
+    api_args = NULL,
+    api_key = NULL) {
   last <- conversation[nrow(conversation),]
   conversation <- ask_impl(
     prompt = NULL,
     conversation = conversation,
     model = model %||% last$data$model,
-    seed = seed %||% last$seed,
-    temperature = temperature %||% last$temperature,
-    top_p = top_p %||% last$top_p,
+    api_args = api_args %||% last$api_args,
     cache = cache,
     api_key = api_key
   )

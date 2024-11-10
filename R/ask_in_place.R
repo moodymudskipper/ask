@@ -13,7 +13,7 @@
 #' \dontrun{
 #' ask_in_place("update the existing readme with useful missing info", context = context_repo())
 #' }
-ask_in_place <- function(prompt = listen(), context = NULL, model = "gpt-4o-2024-08-06", ...) {
+ask_in_place <- function(prompt = listen(), context = NULL, model = getOption("ask.model", "gpt-4o"), ...) {
   context <- context(
     context_in_place(model),
     context
@@ -40,7 +40,7 @@ follow_up_in_place <- function(prompt = listen(), context = NULL, conversation =
   invisible(x)
 }
 
-build_file_chunks_from_answer <- function(content, model = "gpt-4o-2024-08-06") {
+build_file_chunks_from_answer <- function(content, model = getOption("ask.model", "gpt-4o")) {
   content_is_structured <- is.list(content)
   if (content_is_structured) {
     if (!is.data.frame(content)) content <- content[[1]]
@@ -155,7 +155,7 @@ apply_chunks_in_place <- function(chunks) {
   invisible(NULL)
 }
 
-context_in_place <- function(model = "gpt-4o-2024-08-06") {
+context_in_place <- function(model = getOption("ask.model", "gpt-4o")) {
   if (model_family(model) == "gpt") {
     context <- context("Output format" = c(
       "You are a helpful R assistant.",

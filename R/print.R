@@ -12,9 +12,12 @@ print.conversation <- function(x, ..., venue = "viewer") {
   invisible(x)
 }
 
-response_data <- function(x) {
+response_data <- function(x, fail_on_error = TRUE) {
   raw_content <- httr::content(x, "raw")
   char_content <- rawToChar(raw_content)
   data <- jsonlite::parse_json(char_content)
+  if (fail_on_error && x$status_code >= 400) {
+    abort(c("the API call failed", capture.output(data)))
+  }
   data
 }

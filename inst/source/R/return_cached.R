@@ -5,10 +5,7 @@ return_cached <- function(
     context,
     conversation,
     model,
-    seed,
-    temperature,
-    top_p,
-    n,
+    api_args,
     image) {
   if (cache %in% names(globals$memoised)) {
     memoised_fun <- globals$memoised[[cache]]
@@ -18,10 +15,7 @@ return_cached <- function(
         context = context,
         conversation = conversation,
         model = model,
-        seed = seed,
-        temperature = temperature,
-        top_p = top_p,
-        n = n,
+        api_args = api_args,
         image = image
       )
     }
@@ -42,10 +36,7 @@ return_cached <- function(
       context = context,
       conversation = conversation,
       model = model,
-      seed = seed,
-      temperature = temperature,
-      top_p = top_p,
-      n = n,
+      api_args = api_args,
       image = image
     )
   )

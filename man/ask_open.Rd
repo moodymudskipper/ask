@@ -8,12 +8,10 @@ ask_open(
   prompt,
   context = NULL,
   model = getOption("ask.model", "gpt-4o"),
-  seed = NULL,
-  temperature = 1,
-  top_p = 1,
   image = NULL,
   cache = getOption("ask.cache"),
-  api_key = Sys.getenv("OPENAI_API_KEY")
+  api_args = NULL,
+  api_key = NULL
 )
 }
 \arguments{
@@ -28,22 +26,13 @@ message that define the behavior, tone or focus of the assistant.}
 or call \code{all_models()} for chatgpt model, or use ollama models such as
 "llama3.1".}
 
-\item{seed}{The seed used by the model, makes things more reproducible, but
-not completely, due to the nature of LLMs. See \code{cache} to work around
-that.}
-
-\item{temperature}{Choose higher \code{temperature} for more diverse and
-unexpected results, and lower \code{temperature} for more controlled and
-consistent text.}
-
-\item{top_p}{Choose high \code{top_p} for creative applications like storytelling,
-poetry, or brainstorming. Choose low \code{top_p} for applications requiring
-precision and coherence, such as technical writing, factual prompt, or summarization.}
-
 \item{image}{Path or URL to image to provide. Only considered for gpt models.}
 
 \item{cache}{A path where to cache the outputs, or "ram" to store them
 in RAM. useful to spare tokens and to have reproducible code.}
+
+\item{api_args}{Additional arguments to the api, depend on the model and rarely needed, most useful ones
+include \code{temperature} and \code{seed}.}
 
 \item{api_key}{API key}
 }

@@ -2,12 +2,9 @@
 ask_response_chatgpt <- function(
     messages,
     model = getOption("ask.model", "gpt-4o"),
-    seed = NULL,
-    temperature = 1,
-    top_p = 1,
-    n = 1,
     tools = NULL,
-    api_key = Sys.getenv("OPENAI_API_KEY")) {
+    api_key = Sys.getenv("OPENAI_API_KEY"),
+    api_args = NULL) {
   if (!curl::has_internet()) {
     msg <- "gpt models require an internet connection"
     info1 <- "You are not connected"
@@ -22,13 +19,11 @@ ask_response_chatgpt <- function(
   body <- list(
     model = model,
     messages = messages,
-    temperature = temperature,
-    top_p = top_p,
-    tools = tools,
-    n = n
+    tools = tools
   )
+  body <- c(body, api_args)
   if (is.null(tools)) body$tools <- NULL
-  body$seed <- seed
+
   response <- httr::POST(
     url = api_url,
     body = jsonlite::toJSON(body, auto_unbox = TRUE),
@@ -43,29 +38,20 @@ ask_response_ollama <- function(
     context = NULL,
     model = "llama3.1",
     llama_context = NULL,
-    seed = NULL,
-    temperature = 1,
-    top_p = 1,
     format = NULL,
-    cache = getOption("ask.cache")) {
+    cache = getOption("ask.cache"),
+    api_args = NULL) {
   api_url <- "http://localhost:11434/api/generate"
   headers <- httr::add_headers(
     `Content-Type` = "application/json"
   )
-  # Define the request body with the options for temperature and top_p
   body <- list(
     model = model,  # Use the correct model name
     prompt = prompt,
     stream = FALSE,  # Set to false to get the complete response at once
-    options =
-      list(
-        temperature = temperature,  # Set temperature to 0.7
-        top_p = top_p         # Set top_p to 0.9
-      )
+    options = api_args
   )
   if (!is.null(format)) body$format <- format
-
-  body$options$seed <- seed
   body$system <- context
   body$context <- llama_context
 
