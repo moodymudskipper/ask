@@ -18,7 +18,7 @@ ask_in_place <- function(prompt = listen(), context = NULL, model = getOption("a
     context_in_place(model),
     context
   )
-  tools <- if (model_family(model) == "gpt") tools_for_ask_in_place()
+  tools <- if (model_family(model) == "gpt") list(tools_for_ask_in_place())
   conversation <- ask_impl(prompt, context, model = model, tools = tools, ...)
   answer <- extract_last_answer(conversation)
   chunks <- build_file_chunks_from_answer(answer, model)
