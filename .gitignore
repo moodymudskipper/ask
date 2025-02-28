@@ -6,3 +6,4 @@ ignore
 .DS_Store
 .quarto
 __pycache__
+inst/doc

@@ -116,3 +116,74 @@ all_anthropic_models <- function(only_supported = TRUE) {
   out$supported <- TRUE
   tibble::as_tibble(out[order(sub("^.*(20[0-9]{6}).*$", "\\1", out$`Anthropic API`), decreasing = TRUE),])
 }
+
+# https://docs.perplexity.ai/guides/model-cards
+# all_perplexity_models <- function() {}
+#
+# all_gemini_models <- function() {
+#   url <- "https://ai.google.dev/gemini-api/docs/models/gemini"
+#   webpage <- xml2::read_html(url)
+#   tables <- rvest::html_table(webpage)
+#
+#   table1 <- tables[[1]]
+#   tables <- tables[-1]
+#   table1$model <- sapply(strsplit(table1$`Model variant`, "\n\\s+"), function(x) x[[1]])
+#   table1$model_code <- sapply(strsplit(table1$`Model variant`, "\n\\s+"), function(x) x[[2]])
+#   table1[[1]] <- NULL
+#
+#   lapply(tables, function(x) {
+#     data.frame(
+#       model_code = strsplit(x$Description[[1]], "/")[[1]][[2]],
+#       input_token_limit = if ("token_autoToken limits[*]" %in% x$Property) {
+#           strsplit(x$Description[x$Property == "token_autoToken limits[*]"], "\n\\s+")[[1]][[2]]
+#         } else {
+#           NA_character_
+#         },
+#       output_token_limit = if ("token_autoToken limits[*]" %in% x$Property) {
+#         strsplit(x$Description[x$Property == "token_autoToken limits[*]"], "\n\\s+")[[1]][[4]]
+#       } else {
+#         NA_character_
+#       },
+#       rate_limits = if ("swap_driving_apps_wheelRate limits[**]" %in% x$Property) {
+#         gsub("\\s+", " ", x$Description[x$Property == "swap_driving_apps_wheelRate limits[**]"], " ")
+#       } else {
+#         NA_character_
+#       }
+#     )
+#   })
+#
+#
+#   # Separate 1st col of main table into Model and Model Code
+#   # Wrangle other tables
+#   #   drop line 2 (redundant) and 7 (not useful)
+#   #   build cols free_rpm, paid_rpm etc, and a bool col for each capability
+#
+#   # sanity checks
+#   msg <- sprintf(
+#     "oops! The format or the doc at %s changed. Please consult the online doc and report the issue.",
+#     url
+#   )
+#   rvest::html_text(rvest::html_nodes(webpage, ".showalways"), trim = TRUE)
+#
+#   if (length(tables) != 4) abort(msg)
+#   valid_cols_in_1_and_2 <- identical(colnames(tables[[1]]), colnames(tables[[2]]))
+#   rows_to_test <-
+#     c("Description", "Strengths", "Multilingual", "Vision",
+#       "API model name", "Comparative latency", "Context window", "Max output",
+#       "Cost (Input / Output per MTok)", "Training data cut-off")
+#   valid_rows_in_3_and_4 <-
+#     all(rows_to_test %in% tables[[3]][[1]]) &&
+#     all(rows_to_test %in% tables[[4]][[1]])
+#   if (!valid_cols_in_1_and_2 || !valid_rows_in_3_and_4) abort(msg)
+#
+#   t3 <- setNames(as.data.frame(t(tables[[3]][-1])), tables[[3]][[1]])
+#   t4 <- setNames(as.data.frame(t(tables[[4]][-1])), tables[[4]][[1]])
+#   t4$`Message Batches API` <- NA # in t3 but absent from t4
+#   t4$`API format` <- NULL # not informative and not in t3
+#   # t3$legacy <- FALSE
+#   # t4$legacy <- TRUE
+#   t12 <- rbind(tables[[1]], tables[[2]])
+#   t34 <- rbind(t3,t4)
+#   out <- merge(t12, t34, by.x = "Model", by.y = "row.names", all = TRUE)
+#   tibble::as_tibble(out[order(sub("^.*(20[0-9]{6}).*$", "\\1", out$`Anthropic API`), decreasing = TRUE),])
+# }

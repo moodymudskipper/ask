@@ -22,6 +22,9 @@ ask_impl <- function(
   conversation <- processed$conversation
   context <- process_context(context)
 
+  # process tools
+  tools <- process_tools(tools, model)
+
   # return cached result if relevant -------------------------------------------
   if (!is.null(cache)) {
     # FIXME: we might as well keep the same param order

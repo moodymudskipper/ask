@@ -7,7 +7,17 @@ build_convo_rmd <- function(convo, path = tempfile(fileext = ".Rmd")) {
     if (!is.null(tool_calls) && all(lengths(tool_calls))) {
       answers <- tool_calls
     } else {
-      answers <- purrr::map_chr(convo$data, list("choices", 1, "message", "content"))
+      # browser()
+      # TODO: handle tool calls beeter
+      answers <- purrr::map_chr(convo$data, ~ .x$choices[[1]]$message$content %||%
+                                  sprintf("```\n%s\n```", jsonlite::toJSON(.x$choices[[1]]$message$tool_calls, auto_unbox = TRUE, pretty = TRUE))
+      #                             paste(
+      #   collapse = "\n",
+      #   c(
+      #   .x$choices[[1]]$message$tool_calls[[1]]$`function`$name,
+      #   .x$choices[[1]]$message$tool_calls[[1]]$`function`$arguments
+      # ))
+      )
     }
   } else if (conversation_model_family(convo) == "anthropic") {
     tool_calls <- NULL # convo$data$choices$message$tool_calls
